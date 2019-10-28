@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "excelerator" # source code directory
+dist-name = "EXCELerator"
+author = "Jonathan Chukinas"
+author-email = "chukinas@gmail.com"
+home-page = "https://github.com/jonathanchukinas/openpyxl_utils"
+description-file = "README.md"
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Developers',
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    'Natural Language :: English',
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3.6',
+    "Programming Language :: Python :: 3.7",
+]
+requires = ["openpyxl"]
+requires-python = ">=3.6"
+
+[tool.flit.metadata.requires-extra]
+test = [
+    "pytest",
+     "pytest-cov",
+     "tox",
+]
