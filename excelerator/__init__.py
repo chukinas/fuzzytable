@@ -1,8 +1,8 @@
 """
-Library of functions with utilities for the popular xlsx Python module openpyxl
+Library for reading tabular data from excel in a very forgiving manner.
 """
 
-__version__ = "0.1"
+__version__ = "0.1.1"
 
 
 from excelerator.table_reader import TableReader
