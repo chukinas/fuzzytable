@@ -44,4 +44,4 @@ __pycache__/
 .venv/
 
 # Sphinx
-documentation/_*
+docs/_*

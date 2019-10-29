@@ -7,7 +7,7 @@ module = "excelerator"
 dist-name = "EXCELerator"
 author = "Jonathan Chukinas"
 author-email = "chukinas@gmail.com"
-home-page = "https://github.com/jonathanchukinas/openpyxl_utils"
+home-page = "https://github.com/jonathanchukinas/excelerator"
 description-file = "README.md"
 classifiers = [
     'Development Status :: 2 - Pre-Alpha',
@@ -18,15 +18,18 @@ classifiers = [
     "Operating System :: Microsoft :: Windows :: Windows 10",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
 ]
 requires = ["openpyxl"]
-requires-python = ">=3.7"
+requires-python = ">=3.6.3"
 
 [tool.flit.metadata.requires-extra]
 test = [
-    "pytest",
-     "pytest-cov",
-     "tox",
+    "pytest",  # for testing
+    "pytest-cov",  # for calculating test coverage
+    "tox",  # for test automation
+    "sphinx",  # for documentation
+    "m2r",  # sphinx extension for converting markdown to reStructuredText
 ]

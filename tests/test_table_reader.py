@@ -3,16 +3,27 @@ from excelerator import TableReader
 from excelerator import exceptions
 
 
-@pytest.mark.parametrize('sheetname', 'simple_table_left simple_table_right'.split())
-def test_table_reader_simple(sheetname, fixture_path):
+simple_table_expected_output = {
+    'first_name': 'Rose Amy River'.split(),
+    'last_name': 'Tyler Pond Song'.split(),
+    'last_appearance': [2013, 2013, 2015],
+}
+
+
+@pytest.mark.parametrize('sheetname', 'table_top_left table_top_right'.split())
+def test_table_simple_top(sheetname, fixture_path):
+    """Test the most simple use case - default table interpretation"""
     tr = TableReader()
     actual_output = tr.read_from(path=fixture_path, sheetname=sheetname)
-    expected_output = {
-        'first_name': 'Rose Amy River'.split(),
-        'last_name': 'Tyler Pond Song'.split(),
-        'last_appearance': [2013, 2013, 2015],
-    }
-    assert actual_output == expected_output
+    assert actual_output == simple_table_expected_output
+
+
+@pytest.mark.parametrize('sheetname', 'table_bottom_left table_bottom_right'.split())
+def test_table_simple_top(sheetname, fixture_path):
+    """Test another simple use case - default table interpretation + header_row_num"""
+    tr = TableReader(header_row_num=4)
+    actual_output = tr.read_from(path=fixture_path, sheetname=sheetname)
+    assert actual_output == simple_table_expected_output
 
 
 def test_table_reader_invalid_extension(fixture_path):

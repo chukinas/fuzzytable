@@ -11,6 +11,8 @@ Welcome to EXCELerator's documentation!
    :caption: Contents:
 
    TUTORIAL <tutorial.rst>
+   readme_pointer
+   changelog
 
 
 Indices and tables
