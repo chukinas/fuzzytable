@@ -18,7 +18,7 @@ pip install EXCELerator
 ```python
 from excelerator import TableReader
 
-path = 'path\to\excel\sheet.xlsx'
+path = r'path\to\excel\sheet.xlsx'
 sheetname = 'worksheet name'
 tr = TableReader()
 my_table_as_dict = tr.read_from(path, sheetname)

@@ -42,3 +42,6 @@ __pycache__/
 
 # Virtual Environment
 .venv/
+
+# Sphinx
+documentation/_*
