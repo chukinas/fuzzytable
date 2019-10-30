@@ -1,3 +1,5 @@
 ------
 Readme
 ------
+
+.. mdinclude:: ../../README.md

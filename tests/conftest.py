@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 # --- Intra-Package Imports ---------------------------------------------------
-from excelerator import utils
+from excelerator.main import utils
 
 test_utils_path = Path(__file__).parent / 'test_files' / "test_utils.xlsx"
 
@@ -28,3 +28,6 @@ def fixture_get_ws():
 @pytest.fixture(scope='session')
 def fixture_wb():
     return utils.get_workbook(test_utils_path)
+
+
+# TODO do I need all these fixtures?

@@ -2,7 +2,15 @@
 Change Log
 ----------
 
-
-V0.3
+v0.4
 ----
-- add header_row_num param to TableReader
+- add normalization functions:
+    - ``n.STRING()``
+    - ``n.INTEGER()``
+    - ``n.INTEGER_LIST()``
+- add ``normalize`` parameter to TableReader
+
+v0.3
+----
+- add ``header_row_num`` param to ``TableReader``
+

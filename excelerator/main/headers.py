@@ -8,7 +8,7 @@ import statistics
 # None
 
 # --- Intra-Package Imports ---------------------------------------------------
-from excelerator import utils
+from excelerator.main import utils
 
 
 # --- HEADERS -----------------------------------------------------------------

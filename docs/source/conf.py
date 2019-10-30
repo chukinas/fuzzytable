@@ -1,7 +1,7 @@
 # Configuration file for the Sphinx documentation builder.
 import os
 import sys
-import sphinx_bootstrap_theme
+# import sphinx_bootstrap_theme
 
 #
 # This file only contains a selection of the most common options. For a full
@@ -19,13 +19,14 @@ sys.path.insert(0, project_path)
 project = 'EXCELerator'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = 'v0.3.1'  # The full version, including alpha/beta/rc tags
+release = 'v0.4'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'm2r',
 ]
 master_doc = 'index'
 # https://github.com/readthedocs/readthedocs.org/issues/2569

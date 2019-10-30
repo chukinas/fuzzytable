@@ -11,8 +11,9 @@ Welcome to EXCELerator's documentation!
    :caption: Contents:
 
    Readme <readme_pointer>
+   Modules <modules>
+   Cookbook <cookbook>
    Change Log <change_log>
-   modules
 
 Indices and tables
 ==================

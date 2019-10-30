@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
 ]
+keywords = "xlrd openpyxl Excel xlsx xls excel"
 requires = ["openpyxl"]
 requires-python = ">=3.6.3"
 

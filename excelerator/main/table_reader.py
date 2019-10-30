@@ -7,8 +7,8 @@ from contextlib import contextmanager
 # None
 
 # --- Intra-Package Imports ---------------------------------------------------
-from excelerator import utils
-from excelerator import headers
+from excelerator.main import utils
+from excelerator.main import headers
 
 
 class TableReader:
@@ -19,18 +19,19 @@ class TableReader:
     Args:
          fields (list): A list of fields (str). If supplied, TableReader only outputs data whose headers match a string in this list.
          header_row_num (int or None):  If None (default), headers are assumed to be in row 1, with data starting on row 2. If supplied with an int, this is where the header row is assumed to be.
+         normalize (list of funcs): No effect if fields arg is None. If fields is supplied, then the normalize functions are applied to the corresponding field.
     """
-    # TODO How to specify list of strings?
-    # TODO How to specify int or None?
 
     def __init__(
             self,
             fields=None,
             header_row_num=None,
+            normalize=None,
     ):
         self._ws = None
         self.fields = fields
         self.header_row_num = header_row_num
+        self.norm_funcs = normalize
 
     def read_from(self, path, sheetname):
         """Output a table.
@@ -52,10 +53,13 @@ class TableReader:
             )
             for col_num, header in enumerate(_headers, 1):
                 if self._valid_header(header):
-                    result[header] = utils.get_column(worksheet=ws,
-                                                      col_num=col_num,
-                                                      row_start=self._records_row_start,
-                                                      row_end=ws.max_row)
+                    result[header] = utils.get_column(
+                        worksheet=ws,
+                        col_num=col_num,
+                        row_start=self._records_row_start,
+                        row_end=ws.max_row,
+                        norm_func=self._get_norm_func(header),
+                    )
             return result
 
     def _valid_header(self, value):
@@ -90,3 +94,11 @@ class TableReader:
         self._ws = value
         yield
         self._ws = None
+
+    def _get_norm_func(self, field_name):
+        def do_nothing(value):
+            return value
+        if self.fields and self.norm_funcs:
+            index = self.fields.index(field_name)
+            return self.norm_funcs[index]
+        return do_nothing

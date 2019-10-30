@@ -7,22 +7,34 @@ from  collections import namedtuple
 # --- path and sheetname errors -----------------------------------------------
 
 def test_table_reader_invalid_extension(fixture_path):
+
+    # GIVEN a file path with an invalid (i.e. not excel) extension...
     path_with_incorrect_extension = fixture_path.parent / 'not_excel.docx'
+
+    # WHEN user try to read from that file path...
     tr = TableReader()
     try:
         tr.read_from(path=path_with_incorrect_extension, sheetname='does not matter')
+
+    # THEN raise an error
     except exceptions.ExceleratorError:
-        return
+        return  # i.e. PASS the test
     assert False
 
 
 def test_table_reader_missing_worksheet(fixture_path):
+
+    # GIVEN an Excel worksheet that doesn't contain the desired worksheet name...
     missing_ws_name = 'missing_ws'
+
+    # WHEN user tries to read from this non-existent worksheet...
     tr = TableReader()
     try:
         tr.read_from(path=fixture_path, sheetname=missing_ws_name,)
+
+    # THEN raise an error
     except exceptions.ExceleratorError:
-        return
+        return  # i.e. PASS the test
     assert False
 
 
@@ -51,19 +63,31 @@ sheetnames_with_headers_in_first_row = [
 ]
 @pytest.mark.parametrize('sheetname', sheetnames_with_headers_in_first_row)
 def test_table_simple_top(sheetname, fixture_path):
-    """Test the most simple use case - default table interpretation"""
+
+    # GIVEN tabular data whose headers are in row 1...
+
+    # WHEN user reads worksheet with *all* defaults...
     tr = TableReader()
+
+    # THEN all fields with unique, non-None headers get outputted.
     actual_output = tr.read_from(path=fixture_path, sheetname=sheetname)
-    assert actual_output == simple_table_expected_output
+    expected_output = simple_table_expected_output
+    assert actual_output == expected_output
 
 
 @pytest.mark.parametrize('worksheet_given', worksheetgivens)
 def test_table_simple_top(worksheet_given: WorksheetGiven, fixture_path):
-    """Test another simple use case - default table interpretation + header_row_num"""
+
+    # GIVEN a worksheet with header in a *known* row...
     sheetname, header_row_num = worksheet_given
+
+    # WHEN user sets *just* the header row...
     tr = TableReader(header_row_num=header_row_num)
+
+    # THEN all fields with unique, non-None headers get outputted.
     actual_output = tr.read_from(path=fixture_path, sheetname=sheetname)
-    assert actual_output == simple_table_expected_output
+    expected_output = simple_table_expected_output
+    assert actual_output == expected_output
 
 
 def without(d, key):

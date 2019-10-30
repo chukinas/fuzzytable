@@ -31,11 +31,12 @@ def get_worksheet_from_path(path, sheetname):
     return get_worksheet_from_workbook(workbook, sheetname)
 
 
-def get_column(worksheet, col_num, row_start, row_end):
-    return [
+def get_column(worksheet, col_num, row_start, row_end, norm_func=None):
+    default_values = [
         worksheet.cell(row, col_num).value
         for row in range(row_start, row_end + 1)
     ]
+    return [norm_func(val) for val in default_values]
 
 
 def get_worksheet_row(
