@@ -1,5 +1,4 @@
-""""""
-# TODO Fill in docstring
+"""This module is the exclusive interface between Excel and EXCELerator. It uses openpyxl."""
 
 # --- Standard Library Imports ------------------------------------------------
 # None
@@ -31,33 +30,44 @@ def get_worksheet_from_path(path, sheetname):
     return get_worksheet_from_workbook(workbook, sheetname)
 
 
+def get_cell_value(worksheet, row, col, norm_func=None):
+    orig_val = worksheet.cell(row, col).value
+    if callable(norm_func):
+        return norm_func(orig_val)
+    return orig_val
+
+
 def get_column(worksheet, col_num, row_start, row_end, norm_func=None):
-    default_values = [
-        worksheet.cell(row, col_num).value
+    return [
+        get_cell_value(worksheet, row, col_num, norm_func)
         for row in range(row_start, row_end + 1)
     ]
-    return [norm_func(val) for val in default_values]
 
 
 def get_worksheet_row(
         worksheet,
-        row_int,
+        row,
+        norm_func=None,
         # drop_blanks=False,
         # dups_raise_error=False,
         # rowval_raise_error=False,
 ) -> list:
-    """
-
-    :param worksheet: openpyxl Worksheet object
-    :param row_int:
-    :param drop_blanks:
-    :param dups_raise_error:
-    :param rowval_raise_error: Often, you want to create a custom field called 'row' to save the row number.
-    :return:
-    """
+    # """
+    #
+    # :param worksheet: openpyxl Worksheet object
+    # :param row:
+    # :param drop_blanks:
+    # :param dups_raise_error:
+    # :param rowval_raise_error: Often, you want to create a custom field called 'row' to save the row number.
+    # :return:
+    # """
 
     # --- get full row --------------------------------------------------------
-    row = [worksheet.cell(row_int, col).value for col in range(1, worksheet.max_column + 1)]
+    max_col = worksheet.max_column
+    row = [
+        get_cell_value(worksheet, row, col, norm_func)
+        for col in range(1, max_col + 1)
+    ]
 
     # --- remove blanks (if desired) ------------------------------------------
     # if drop_blanks:

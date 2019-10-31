@@ -8,7 +8,7 @@ import statistics
 # None
 
 # --- Intra-Package Imports ---------------------------------------------------
-from excelerator.main import utils
+from excelerator.main import excel_interface
 
 
 # --- HEADERS -----------------------------------------------------------------
@@ -21,7 +21,7 @@ def get_best_match_row_number(worksheet, values, max_row=20):
     :return: row number (1-indexed) that best matches the provided values
     """
     last_row = min(max_row, worksheet.max_row)
-    rows = [utils.get_worksheet_row(worksheet, row) for row in range(1, last_row + 1)]
+    rows = [excel_interface.get_worksheet_row(worksheet, row) for row in range(1, last_row + 1)]
     best_index = find_most_similar_string_sequence(values, rows)
     return best_index + 1
 

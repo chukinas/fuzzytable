@@ -5,29 +5,35 @@ from pathlib import Path
 import pytest
 
 # --- Intra-Package Imports ---------------------------------------------------
-from excelerator.main import utils
+# None
 
-test_utils_path = Path(__file__).parent / 'test_files' / "test_utils.xlsx"
 
+# --- path to excel sheet -----------------------------------------------------
 
 @pytest.fixture(scope='session')
 def fixture_path():
-    return test_utils_path
+    return Path(__file__).parent / 'test_files' / "test_utils.xlsx"
 
 
-def get_ws(worksheet_name):
-    wb = utils.get_workbook(test_utils_path)
-    return utils.get_worksheet_from_path(wb, worksheet_name)
+# --- standard set of expected results ----------------------------------------
+
+@pytest.fixture(scope='session')
+def expected_fields():
+    return {
+        'first_name': 'Rose Amy River'.split(),
+        'last_name': 'Tyler Pond Song'.split(),
+        'last_appearance': [2013, 2013, 2015],
+    }
 
 
 @pytest.fixture(scope='session')
-def fixture_get_ws():
-    return get_ws
-
-
-@pytest.fixture(scope='session')
-def fixture_wb():
-    return utils.get_workbook(test_utils_path)
-
-
-# TODO do I need all these fixtures?
+def expected_records(expected_fields):
+    keys = expected_fields.keys()
+    records_count = 3
+    records = list()
+    for i in range(records_count):
+        record = dict()
+        for key in keys:
+            record[key] = expected_fields[key][i]
+        records.append(record)
+    return records

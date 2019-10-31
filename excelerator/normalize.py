@@ -1,4 +1,6 @@
-""""""
+"""Use normalization functions when you want to guarantee you get the data types you want.
+
+"""
 
 # --- Standard Library Imports ------------------------------------------------
 import datetime
@@ -11,7 +13,8 @@ import re
 # --- Intra-Package Imports ---------------------------------------------------
 # None
 
-# TODO follow the way Click names its custom data types
+
+
 
 
 # --- Normalization functions -------------------------------------------------
@@ -30,6 +33,7 @@ def STRING():
     """Normalizes cell values to str data type.
 
     Note: Booleans and dates are converted to ``''``.
+    Dates are converted to a string of the year alone.
 
     Returns:
         str: A string with leading and trailing whitespace removed.
@@ -41,7 +45,6 @@ def STRING():
     return norm_string
 
 
-# TODO: give option to INTEGER to specify what happens with bools
 def INTEGER():
     """Normalizes cell values to int data type.
 
@@ -49,7 +52,6 @@ def INTEGER():
         int
         None
     """
-    # TODO explain why I organized like this
     def norm_int(value):
         if isinstance(value, (int, float)):
             return int(value)

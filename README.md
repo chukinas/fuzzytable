@@ -27,5 +27,5 @@ from excelerator import TableReader
 path = r'path\to\excel\sheet.xlsx'
 sheetname = 'worksheet name'
 tr = TableReader()
-my_table_as_dict = tr.read_from(path, sheetname)
+my_table_as_dict = tr.get_fields(path, sheetname)
 ```

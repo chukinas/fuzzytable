@@ -7,9 +7,7 @@ normalize_params = list()
 
 NormalizeParam = collections.namedtuple("NormalizeParam", "norm_func expected_output")
 
-# TODO docs: identify this particular "gotcha" - the fact that the norm types need to be instantiated.
-# TODO: give this the option
-# TODO doc - dates are converted to year
+
 normalize_params.append(NormalizeParam(norm_func=n.INTEGER(), expected_output=[
     0,
     2,
@@ -113,6 +111,6 @@ def test_normalize(fixture_path, normalize_param: NormalizeParam):
     )
 
     # THEN
-    actual_output = tr.read_from(path=fixture_path, sheetname=sheetname)
+    actual_output = tr.get_fields(path=fixture_path, sheetname=sheetname)
     expected_output = {header: normalize_param.expected_output}
     assert actual_output == expected_output
