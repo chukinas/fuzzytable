@@ -12,6 +12,16 @@ from excelerator import headers
 
 
 class TableReader:
+    """Reads Excel tabular data.
+
+    Instantiating a TableReader object supplies all the rules for how to read tabular data (such as what fields/headers to look for; which row to look in). The TableReader's methods are where you supply the worksheet to be read and how you want the data to be outputted (e.g. as list of records, or dict of fields).
+
+    Args:
+         fields (list): A list of fields (str). If supplied, TableReader only outputs data whose headers match a string in this list.
+         header_row_num (int or None):  If None (default), headers are assumed to be in row 1, with data starting on row 2. If supplied with an int, this is where the header row is assumed to be.
+    """
+    # TODO How to specify list of strings?
+    # TODO How to specify int or None?
 
     def __init__(
             self,
@@ -23,18 +33,28 @@ class TableReader:
         self.header_row_num = header_row_num
 
     def read_from(self, path, sheetname):
+        """Output a table.
+
+        Args:
+            path (str or Path object): Path to workbook. Raise error if not found.
+            sheetname (str): Worksheet name. Raise error if not found.
+
+        Returns:
+            dict: Headers as keys, list of data as values.
+        """
         ws = utils.get_worksheet_from_path(path, sheetname)
         with self._set_ws(ws):
             result = dict()
-            headers = utils.get_worksheet_row(
+            # TODO: fix this outer scope problem:
+            _headers = utils.get_worksheet_row(
                 worksheet=ws,
                 row_int=self.header_row_num,
             )
-            for col_num, header in enumerate(headers, 1):
+            for col_num, header in enumerate(_headers, 1):
                 if self._valid_header(header):
                     result[header] = utils.get_column(worksheet=ws,
                                                       col_num=col_num,
-                                                      row_start=self.records_row_start,
+                                                      row_start=self._records_row_start,
                                                       row_end=ws.max_row)
             return result
 
@@ -62,7 +82,7 @@ class TableReader:
             self._header_row_num = int(value)
 
     @property
-    def records_row_start(self):
+    def _records_row_start(self):
         return self.header_row_num + 1
 
     @contextmanager

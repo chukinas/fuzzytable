@@ -11,7 +11,7 @@ def test_table_reader_invalid_extension(fixture_path):
     tr = TableReader()
     try:
         tr.read_from(path=path_with_incorrect_extension, sheetname='does not matter')
-    except exceptions.EXCELeratorError:
+    except exceptions.ExceleratorError:
         return
     assert False
 
@@ -21,7 +21,7 @@ def test_table_reader_missing_worksheet(fixture_path):
     tr = TableReader()
     try:
         tr.read_from(path=fixture_path, sheetname=missing_ws_name,)
-    except exceptions.EXCELeratorError:
+    except exceptions.ExceleratorError:
         return
     assert False
 
@@ -37,8 +37,8 @@ simple_table_expected_output = {
 
 WorksheetGiven = namedtuple('WorksheetGiven', 'sheetname header_row_num')
 worksheetgivens = [
-    WorksheetGiven('table_top_left', 1),
-    WorksheetGiven('table_top_right', 1),
+    # WorksheetGiven('table_top_left', 1),
+    # WorksheetGiven('table_top_right', 1),
     WorksheetGiven('table_bottom_left', 4),
     WorksheetGiven('table_bottom_right', 4),
 ]

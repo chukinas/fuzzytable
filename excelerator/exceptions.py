@@ -8,8 +8,9 @@
 # None
 
 
-# --- Customr Exceptions ------------------------------------------------------
-class EXCELeratorError(Exception):
+# --- Custom Exceptions ------------------------------------------------------
+class ExceleratorError(Exception):
+    """Standard EXCELerator Exception"""
     pass
 
 

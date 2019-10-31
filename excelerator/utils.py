@@ -16,14 +16,14 @@ def get_workbook(path):
     try:
         return openpyxl.load_workbook(path, data_only=True)
     except (FileNotFoundError, InvalidFileException):
-        raise exceptions.EXCELeratorError(f"\nError: '{path} ' is not a valid excel path.")
+        raise exceptions.ExceleratorError(f"\nError: '{path} ' is not a valid excel path.")
 
 
 def get_worksheet_from_workbook(workbook, worksheet_name):
     try:
         return workbook[worksheet_name]
     except KeyError:
-        raise exceptions.EXCELeratorError(f"\nError: Workbook does not contain a '{worksheet_name}' worksheet")
+        raise exceptions.ExceleratorError(f"\nError: Workbook does not contain a '{worksheet_name}' worksheet")
 
 
 def get_worksheet_from_path(path, sheetname):
