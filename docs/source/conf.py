@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'EXCELerator'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = 'v0.6'  # The full version, including alpha/beta/rc tags
+release = 'v0.6.1'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
