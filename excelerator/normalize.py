@@ -6,6 +6,7 @@
 import datetime
 import numbers
 import re
+from abc import ABC, abstractmethod
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -14,62 +15,109 @@ import re
 # None
 
 
+# --- base class --------------------------------------------------------------
 
+class NormalizeBase(ABC):
+    """Base class for all normalization classes.
+    """
 
+    @abstractmethod
+    def normalize(self, value):
+        """Abstract method that needs implemented when subclassed.
 
-# --- Normalization functions -------------------------------------------------
+        Args:
+            value:
 
-def norm_int_list(value):
-    if isinstance(value, (int, float)):
-        return [int(value)]
-    else:
-        string_of_ints = re.findall(r'\d+', str(value))
-        return [int(val) for val in string_of_ints]
+        Returns:
+
+        """
+        return value
 
 
 # --- Normalization "data types" ----------------------------------------------
 
-def STRING():
-    """Normalizes cell values to str data type.
+class STRING(NormalizeBase):
+    """Normalizes cell values to :obj:`str`.
 
-    Note: Booleans and dates are converted to ``''``.
-    Dates are converted to a string of the year alone.
+    Other Parameters:
+        strip_whitespace (``bool``, default ``True``): If `True`, remove leading and trailing whitespace.
+        exclude_excel_bool (``bool``, default ``True``): If `True`,
+            native excel booleans are normalized to empty string.
+        exclude_excel_dates (``bool``, default ``True``): If `True`,
+            native excel dates are normalized to empty string.
 
-    Returns:
-        str: A string with leading and trailing whitespace removed.
+    Warning:
+        All ``Other Parameters`` are not yet implemented.
+
+        Passing these arguments does nothing. No errors are raised.
     """
-    def norm_string(value):
+
+    def __init__(
+            self,
+            strip_whitespace=True,
+            exclude_excel_bool=True,
+            exclude_excel_dates=True,
+    ):
+        pass
+
+    def normalize(self, value) -> str:
+        # """
+        #
+        # Args:
+        #     value: The value of an excel worksheet cell.
+        #
+        # Returns:
+        #     str: see class desription and parameters for details.
+        #
+        # """
         if value is None or isinstance(value, (bool, datetime.date, datetime.datetime)):
             return ''
         return str(value).strip()
-    return norm_string
 
 
-def INTEGER():
-    """Normalizes cell values to int data type.
-
-    Returns:
-        int
-        None
+class INTEGER_LIST(NormalizeBase):
+    """Normalize cell values to :obj:`list` of :obj:`int`.
     """
-    def norm_int(value):
+
+    def normalize(self, value):
+        if isinstance(value, (int, float)):
+            return [int(value)]
+        else:
+            string_of_ints = re.findall(r'\d+', str(value))
+            return [int(val) for val in string_of_ints]
+
+
+class INTEGER(NormalizeBase):
+    """Normalize cell values to ``int``.
+
+    Other Parameters:
+        allow_none (``bool``, default ``True``): Determines response when cell is either blank or contains no digits.
+            If `True`, allow the return of ``None``.
+            If `False`, return ``-1`` instead.
+
+    Warning:
+        All ``Other Parameters`` are not yet implemented.
+
+        Passing these arguments does nothing. No errors are raised.
+    """
+
+    def __init__(
+            self,
+            allow_none=True,
+    ):
+        pass
+
+    def normalize(self, value) -> int:
+
+        # Try simple conversion first
         if isinstance(value, (int, float)):
             return int(value)
-        ints = norm_int_list(value)
+
+        # Then the more resource intensive method
+        ints = INTEGER_LIST().normalize(value)
         if len(ints) == 0:
             return None
         return ints[0]
-
-    return norm_int
-
-
-def INTEGER_LIST():
-    """Normalizes cell values to list of integers.
-
-    Returns:
-        list(int)
-    """
-    return norm_int_list
 
 
 # def FLOAT():

@@ -25,10 +25,13 @@ def test_table_simple_top(sheetname, fixture_path, expected_fields):
     # GIVEN tabular data whose headers are in row 1...
 
     # WHEN user reads worksheet with *all* defaults...
-    tr = TableReader()
+    tr = TableReader(
+        path=fixture_path,
+        sheetname=sheetname,
+    )
 
     # THEN all fields with unique, non-None headers get outputted.
-    actual_output = tr.get_fields(path=fixture_path, sheetname=sheetname)
+    actual_output = tr.get_fields()
     expected_output = expected_fields
     assert actual_output == expected_output
 
@@ -40,10 +43,14 @@ def test_table_simple_top(worksheet_given: WorksheetGiven, fixture_path, expecte
     sheetname, header_row_num = worksheet_given
 
     # WHEN user sets *just* the header row...
-    tr = TableReader(header_row_num=header_row_num)
+    tr = TableReader(
+        header_row_num=header_row_num,
+        path=fixture_path,
+        sheetname=sheetname,
+    )
 
     # THEN all fields with unique, non-None headers get outputted.
-    actual_output = tr.get_fields(path=fixture_path, sheetname=sheetname)
+    actual_output = tr.get_fields()
     expected_output = expected_fields
     assert actual_output == expected_output
 
@@ -77,10 +84,14 @@ def test_table_simple_seek_header(
 
     # WHEN a user desires a specific set of fields...
     fields = desired_and_actual_fieldnames.fields
-    tr = TableReader(fields=fields)
+    tr = TableReader(
+        fields=fields,
+        path=fixture_path,
+        sheetname=sheetname,
+    )
 
     # THEN the header row is found automatically and only those fields passed
     #   as arguments are returned.
-    actual_output = tr.get_fields(path=fixture_path, sheetname=sheetname)
+    actual_output = tr.get_fields()
     expected_output = filtered_dict(expected_fields, desired_and_actual_fieldnames.expected_field_names)
     assert actual_output == expected_output

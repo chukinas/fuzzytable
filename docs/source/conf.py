@@ -2,6 +2,7 @@
 import os
 import sys
 # import sphinx_bootstrap_theme
+import sphinx_rtd_theme
 
 #
 # This file only contains a selection of the most common options. For a full
@@ -19,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'EXCELerator'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = 'v0.5'  # The full version, including alpha/beta/rc tags
+release = 'v0.6'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
@@ -27,6 +28,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'm2r',
+    'sphinx_rtd_theme',
 ]
 master_doc = 'index'
 # https://github.com/readthedocs/readthedocs.org/issues/2569
@@ -42,7 +44,8 @@ exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
+# html_theme = 'alabaster'
 # html_theme = 'bootstrap'
 # html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 

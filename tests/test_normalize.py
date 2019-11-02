@@ -106,11 +106,13 @@ def test_normalize(fixture_path, normalize_param: NormalizeParam):
 
     # WHEN an EXCELerator normalize function is applied to the field...
     tr = TableReader(
-        fields=[header], # TODO make sure header_row_num overrides fields list
-        normalize=[normalize_param.norm_func], # TODO make sure this also works as a single norm func
+        fields=[header],  # TODO make sure header_row_num overrides fields list
+        normalize=[normalize_param.norm_func],  # TODO make sure this also works as a single norm func
+        path=fixture_path,
+        sheetname=sheetname,
     )
 
     # THEN
-    actual_output = tr.get_fields(path=fixture_path, sheetname=sheetname)
+    actual_output = tr.get_fields()
     expected_output = {header: normalize_param.expected_output}
     assert actual_output == expected_output

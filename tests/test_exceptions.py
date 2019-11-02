@@ -34,9 +34,12 @@ def test_table_reader_invalid_extension(fixture_path):
     path_with_incorrect_extension = fixture_path.parent / 'not_excel.docx'
 
     # WHEN user try to read from that file path...
-    tr = TableReader()
+    tr = TableReader(
+        path=path_with_incorrect_extension,
+        sheetname='does not matter'
+    )
     try:
-        tr.get_fields(path=path_with_incorrect_extension, sheetname='does not matter')
+        tr.get_fields()
 
     # THEN raise an error
     except exceptions.ExceleratorError:
@@ -50,9 +53,12 @@ def test_table_reader_missing_worksheet(fixture_path):
     missing_ws_name = 'missing_ws'
 
     # WHEN user tries to read from this non-existent worksheet...
-    tr = TableReader()
+    tr = TableReader(
+        path=fixture_path,
+        sheetname=missing_ws_name,
+    )
     try:
-        tr.get_fields(path=fixture_path, sheetname=missing_ws_name, )
+        tr.get_fields()
 
     # THEN raise an error
     except exceptions.ExceleratorError:

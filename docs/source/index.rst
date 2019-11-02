@@ -10,10 +10,10 @@ Welcome to EXCELerator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Readme <readme_pointer>
-   Modules <modules>
-   Cookbook <cookbook>
-   Change Log <change_log>
+   readme_pointer
+   anatomy
+   API Reference <api_ref/index>
+   change_log
 
 Indices and tables
 ==================

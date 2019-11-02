@@ -9,6 +9,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 
 # --- Intra-Package Imports ---------------------------------------------------
 from excelerator import exceptions
+from excelerator.normalize import NormalizeBase
 
 
 def get_workbook(path):
@@ -30,11 +31,16 @@ def get_worksheet_from_path(path, sheetname):
     return get_worksheet_from_workbook(workbook, sheetname)
 
 
-def get_cell_value(worksheet, row, col, norm_func=None):
+def get_cell_value(worksheet, row, col, normalize=None):
     orig_val = worksheet.cell(row, col).value
-    if callable(norm_func):
-        return norm_func(orig_val)
-    return orig_val
+    if normalize is None:
+        return orig_val
+    elif isinstance(normalize, NormalizeBase):
+        return normalize.normalize(orig_val)
+    elif callable(normalize):
+        return normalize(orig_val)
+    else:
+        raise TypeError(f"{get_cell_value.__name__} must be None or a callable.")
 
 
 def get_column(worksheet, col_num, row_start, row_end, norm_func=None):
@@ -47,7 +53,7 @@ def get_column(worksheet, col_num, row_start, row_end, norm_func=None):
 def get_worksheet_row(
         worksheet,
         row,
-        norm_func=None,
+        normalize=None,
         # drop_blanks=False,
         # dups_raise_error=False,
         # rowval_raise_error=False,
@@ -65,7 +71,7 @@ def get_worksheet_row(
     # --- get full row --------------------------------------------------------
     max_col = worksheet.max_column
     row = [
-        get_cell_value(worksheet, row, col, norm_func)
+        get_cell_value(worksheet, row, col, normalize)
         for col in range(1, max_col + 1)
     ]
 

@@ -24,29 +24,40 @@ class TableReader:
     or dict of fields).
 
     Args:
-         fields (:obj:`list`, default :obj:`None`): A list of fields (str). If supplied, TableReader only
-            outputs data whose headers match a string in this list.
-         header_row_num (:obj:`int`, default :obj:`None`):  If None (default), headers are assumed to be in row 1, with data starting on
-            row 2. If supplied with an int, this is where the header row is assumed to be.
-         normalize (:obj:`list` of :obj:`excelerator.normalize.NORM_TYPE()`, default :obj:`None`): No effect if fields arg is None.
-            If fields is supplied, then the normalize
-            functions are applied to the corresponding field.
+        fields (:obj:`list` of :obj:`str`, :obj:`str`, default `None`)
+            If supplied, TableReader only outputs fields whose headers match a string in this list.
+
+            Behavior modified by: :attr:`approximate_match`
+
+            For more options, pass a list of :obj:`excelerator.Field` objects.
+        header_row_num (:obj:`int` -or- default :obj:`None`): fdsfas
+            If None (default), headers are assumed to be in row 1, with data starting on row 2.
+            If supplied with an int, this is where the header row is assumed to be.
+        path (:obj:`str` ::or:: :obj:`pathlib.Path` ::or:: default :obj:`None`): fdfdsa
+            Path to workbook. Raise error if not found.
+        sheetname (:obj:`str`): Worksheet name.
+            Raise error if not found. **NOTE** Current version supports only `str` input.
+        normalize (:obj:`list` of :obj:`excelerator.normalize.NORM_TYPE()`, default :obj:`None`): fdsfds
+            No effect if `fields` is `None`.
+            If fields is supplied, then the normalize functions are applied to the corresponding field.
             Use normalization functions when you want to guarantee you get the data types you want.
 
-            There are two ways to use them.
-            - First, send just
+    Other Parameters:
+        approximate_match (`bool` / default `True`):
+        detailed_output
+        aliases (``list`` of ``str``, ``list`` of ``list`` of ``str``, default ``None``)
+        aliases_only (``bool``, default ``False``): fdsafdsa
 
-            Note:
-            Here's a potential "gotcha". It's important that you always call the function. Example:
+    Warning:
+        All ``Other Parameters`` are not yet implemented.
 
-            ``
-            from excelerator import TableReader, normalize
+        Passing these arguments does nothing. No errors are raised.
 
-            tr = TableReader(
-            fields='first_name last_name'.split(),
-            normalize=normalize.STRING(),
-            )
-            ``
+    Raises:
+        :obj:`excelerator.exceptions.ExceleratorError`: stuff
+                if file not found or if file wrong type or
+                if sheetname not found
+        FileNotFound: if file not found
 
     Examples:
         >>> from excelerator import TableReader
@@ -54,6 +65,21 @@ class TableReader:
                 fields='first_name last_name'.split(),
             )
         >>> fields = tr.get_fields(path='path/to/excel.xlsx', sheetname='names')
+    #
+    #     There are two ways to use them.
+    #         - First, send just
+    #
+    #         Note:
+    #         Here's a potential "gotcha". It's important that you always call the function. Example:
+    #
+    #         ``
+    #         from excelerator import TableReader, normalize
+    #
+    #         tr = TableReader(
+    #         fields='first_name last_name'.split(),
+    #         normalize=normalize.STRING(),
+    #         )
+    #         ``
 
     """
 
@@ -62,60 +88,56 @@ class TableReader:
             fields=None,
             header_row_num=None,
             normalize=None,
+            path=None,
+            sheetname=None,
+            approximate_match=False,
     ):
         self._ws = None
         self.fields = fields
         self.header_row_num = header_row_num
         self.norm_funcs = normalize
+        self.sheetname = sheetname  # TODO rename to sheetnames
+        self.path = path
 
-    def get_records(self, path, sheetname):
-        """Read the worksheet table with data grouped by record (i.e. rows).
-
-        Args:
-            path (str or Path object): Path to workbook. Raise error if not found.
-            sheetname (str): Worksheet name. Raise error if not found.
+    def get_records(self):
+        """Group tabular data by record (i.e. rows).
 
         Returns:
             list: one item per record (row). Each record is represented as a dictionary of fieldname: cellvalue pairs.
         """
-        ws = excel_interface.get_worksheet_from_path(path, sheetname)
-        with self._set_ws(ws):
+        with self._set_ws():
             field_summaries = self._get_fieldsummaries()
             result = list()
-            for row in range(self._records_row_start, ws.max_row + 1):
+            for row in range(self._records_row_start, self._ws.max_row + 1):
                 record = dict()
                 for field in field_summaries:
                     record[field.header_name] = excel_interface.get_cell_value(
-                        worksheet=ws,
+                        worksheet=self._ws,
                         row=row,
                         col=field.col_num,
-                        norm_func=field.norm_func,
+                        normalize=field.norm_func,
                     )
                 result.append(record)
         return result
 
-    def get_fields(self, path, sheetname):
-        """Read the worksheet table with data grouped by field (i.e. columns).
+    def get_fields(self):
+        """Group tabular data by field (i.e. columns).
 
         keys: field names
-        values: list of cell values in that column
 
-        Args:
-            path (str or Path object): Path to workbook. Raise error if not found.
-            sheetname (str): Worksheet name. Raise error if not found.
+        values: list of cell values in that column
 
         Returns:
             dict: Headers as keys, list of data as values.
         """
-        ws = excel_interface.get_worksheet_from_path(path, sheetname)
-        with self._set_ws(ws):
+        with self._set_ws():
             result = dict()
             for field in self._get_fieldsummaries():
                 result[field.header_name] = excel_interface.get_column(
-                    worksheet=ws,
+                    worksheet=self._ws,
                     col_num=field.col_num,
                     row_start=self._records_row_start,
-                    row_end=ws.max_row,
+                    row_end=self._ws.max_row,
                     norm_func=field.norm_func,
                 )
             return result
@@ -155,8 +177,8 @@ class TableReader:
         return self.header_row_num + 1
 
     @contextmanager
-    def _set_ws(self, value):
-        self._ws = value
+    def _set_ws(self):
+        self._ws = excel_interface.get_worksheet_from_path(self.path, self.sheetname)
         header_row_num = self._header_row_num
         yield
         self._ws = None

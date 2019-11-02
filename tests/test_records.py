@@ -7,11 +7,11 @@ def test_get_records(fixture_path, expected_records):
     sheetname = 'table_top_right'
 
     # WHEN user default-reads worksheet and gets records...
-    tr = TableReader()
-    actual_output = tr.get_records(
+    tr = TableReader(
         path=fixture_path,
-        sheetname=sheetname
+        sheetname=sheetname,
     )
+    actual_output = tr.get_records()
 
     # THEN all fields with unique, non-None headers get outputted as list of dicts.
     expected_output = expected_records
