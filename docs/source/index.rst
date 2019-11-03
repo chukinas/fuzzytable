@@ -1,23 +1,33 @@
-.. EXCELerator documentation master file, created by
-   sphinx-quickstart on Thu Oct 31 07:20:22 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to EXCELerator's documentation!
-=======================================
+================================================
+Welcome to fuzzytable's documentation!
+================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   readme_pointer
-   anatomy
-   API Reference <api_ref/index>
+   readme
+   API Reference <api/index>
+   Tutorials <tutorials/index>
    change_log
 
+.. TODO continue this example with some of the things from the tutorial.
+.. TODO Build out this readme page (see my card game)
+.. TODO Read through the other docs pages and make note of todos
+.. TODO 100% coverage
+
+==================
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+----
+
+============
+Readme
+============
+
+.. mdinclude:: ../../README.md

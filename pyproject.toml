@@ -3,8 +3,8 @@ requires = ["flit"]
 build-backend = "flit.buildapi"
 
 [tool.flit.metadata]
-module = "excelerator"
-dist-name = "EXCELerator"
+module = "fuzzytable"
+dist-name = "fuzzytable"
 author = "Jonathan Chukinas"
 author-email = "chukinas@gmail.com"
 home-page = "https://github.com/jonathanchukinas/excelerator"
@@ -22,15 +22,22 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
 ]
-keywords = "xlrd openpyxl Excel xlsx xls excel"
+keywords = "xlrd openpyxl Excel xlsx xls excel csv fuzzy"
 requires = ["openpyxl"]
-requires-python = ">=3.6.3"
+requires-python = ">=3.6.3"  # ">3.7"
+
+[tool.flit.metadata.urls]
+Documentation = "https://fuzzytable.readthedocs.io/en/latest/api_ref/index.html"
 
 [tool.flit.metadata.requires-extra]
 test = [
     "pytest",  # for testing
     "pytest-cov",  # for calculating test coverage
     "tox",  # for test automation
+    "names",  # for generating random names during testing
+]
+docs = [
     "sphinx",  # for documentation
     "m2r",  # sphinx extension for converting markdown to reStructuredText
+    "sphinx-rtd-theme",  # sphinx readthedocs theme
 ]

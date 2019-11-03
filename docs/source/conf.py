@@ -17,10 +17,10 @@ sys.path.insert(0, project_path)
 
 
 # -- Project information -----------------------------------------------------
-project = 'EXCELerator'
+project = 'fuzzytable'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = 'v0.7'  # The full version, including alpha/beta/rc tags
+release = '0.8-alpha'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
