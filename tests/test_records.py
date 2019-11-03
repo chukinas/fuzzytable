@@ -1,4 +1,4 @@
-from excelerator import TableReader
+from excelerator import TableParser
 
 
 def test_get_records(fixture_path, expected_records):
@@ -7,9 +7,9 @@ def test_get_records(fixture_path, expected_records):
     sheetname = 'table_top_right'
 
     # WHEN user default-reads worksheet and gets records...
-    tr = TableReader(
+    tr = TableParser(
         path=fixture_path,
-        sheetname=sheetname,
+        worksheet=sheetname,
     )
     actual_output = tr.get_records()
 

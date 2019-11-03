@@ -1,5 +1,5 @@
 from excelerator import exceptions
-from excelerator.main.table_reader import TableReader
+from excelerator.main.tableparser import TableParser
 import pytest
 
 # --- errors during instantiation ---------------------------------------------
@@ -15,9 +15,12 @@ import pytest
     (4.0, TypeError),
 ])
 def test_bad_row_num(io):
-    value, expected_error = io
+    header_row_num, expected_error = io
     try:
-        TableReader(header_row_num=value)
+        TableParser(
+            header_row_num=header_row_num,
+            worksheet="does not matter"
+        )
         actual_error = None
     except ValueError:
         actual_error = ValueError
@@ -34,9 +37,9 @@ def test_table_reader_invalid_extension(fixture_path):
     path_with_incorrect_extension = fixture_path.parent / 'not_excel.docx'
 
     # WHEN user try to read from that file path...
-    tr = TableReader(
+    tr = TableParser(
         path=path_with_incorrect_extension,
-        sheetname='does not matter'
+        worksheet='does not matter'
     )
     try:
         tr.get_fields()
@@ -53,9 +56,9 @@ def test_table_reader_missing_worksheet(fixture_path):
     missing_ws_name = 'missing_ws'
 
     # WHEN user tries to read from this non-existent worksheet...
-    tr = TableReader(
+    tr = TableParser(
         path=fixture_path,
-        sheetname=missing_ws_name,
+        worksheet=missing_ws_name,
     )
     try:
         tr.get_fields()

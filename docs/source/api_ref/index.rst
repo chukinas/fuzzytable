@@ -5,7 +5,8 @@ API Reference
 .. toctree::
    :maxdepth: 3
 
-   tablereader
-   field
+   tableparser
+   worksheetparser
+   fieldparser
    normalize
    exceptions

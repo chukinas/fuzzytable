@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'EXCELerator'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = 'v0.6.1'  # The full version, including alpha/beta/rc tags
+release = 'v0.7'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
@@ -29,6 +29,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'm2r',
     'sphinx_rtd_theme',
+    'sphinx.ext.todo',
 ]
 master_doc = 'index'
 # https://github.com/readthedocs/readthedocs.org/issues/2569
@@ -71,3 +72,6 @@ napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
+
+# TODOs
+todo_include_todos = True

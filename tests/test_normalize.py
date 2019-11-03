@@ -1,6 +1,6 @@
 import collections
 import pytest
-from excelerator import TableReader
+from excelerator import TableParser
 from excelerator import normalize as n
 
 normalize_params = list()
@@ -105,11 +105,11 @@ def test_normalize(fixture_path, normalize_param: NormalizeParam):
     header = 'values'
 
     # WHEN an EXCELerator normalize function is applied to the field...
-    tr = TableReader(
+    tr = TableParser(
         fields=[header],  # TODO make sure header_row_num overrides fields list
         normalize=[normalize_param.norm_func],  # TODO make sure this also works as a single norm func
         path=fixture_path,
-        sheetname=sheetname,
+        worksheet=sheetname,
     )
 
     # THEN

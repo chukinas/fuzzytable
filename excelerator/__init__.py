@@ -2,8 +2,9 @@
 Library for reading tabular data from excel in a very forgiving manner.
 """
 
-__version__ = "0.6.1"
+__version__ = "0.7"
 
 
-from excelerator.main.table_reader import TableReader
-from excelerator.main.field import Field
+from excelerator.main.fieldparser import FieldParser
+from excelerator.main.tableparser import TableParser
+from excelerator.main.worksheetparser import WorksheetParser

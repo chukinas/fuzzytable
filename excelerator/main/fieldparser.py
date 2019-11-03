@@ -1,20 +1,30 @@
-class Field:
-    """Defines a single column of Excel data to read.
+class FieldParser:
+    """Optional argument for  :obj:`exclerator.TableParser` :obj:`fields` parameter.
+
+    When using ``FieldParser``, typically you will pass a sequence of them to a
+    ``TableParser`` as ``fields`` parameter. The ``TableParser`` generally finds the row in a worksheet that best
+    matches each FieldParser object.
 
     Args:
-        name (``str``)
-
-        alias (``list`` of ``str``, ``str``, default ``None``)
-
-        alias_include_name (``bool``, default ``True``): If ``True`` (default),
-            the ``all_alias`` property returns a set of values
-            that includes ``name`` and the contents of ``alias``.
-            If ``False``, ``name`` is excluded.
-            No effect if ``alias`` is empty.
+        name (``str``): Field name.
+            Default behavior: TableParser find the header matching this value.
+        alias (``str`` or ``list`` thereof, default ``None``):
 
     Other Parameters:
-        exact_match (``bool``, default ``True``)
+        approx_match (``bool``, default ``False``): Allows
         normalize (:obj:`normalize.NormalizeBase`, default ``None``)
+            This overrides any normalize classes in ``TablerParser`` ``normalize`` parameter.
+
+    Note: When a sequence of ``FieldParser`` objects is passed to a ``TableParser``, \
+        each ``FieldParser`` is mapped to a single header cell if possible. \
+        This happens in the following order:
+        1. Find the header row. See ``TableParser`` parameters for details.
+        2. For each ``field_parser.name``, find exact matches.
+        3. For each ``field_parser.get_aliases()``, find exact matches.
+        4. For each ``field_parser.name``, find approximate matches.
+        5. For each ``field_parser.get_aliases()``, find approximate matches.
+
+        Each header cell can only be mapped to a single FieldParser object.
 
     Warning:
         All ``Other Parameters`` are not yet implemented.
@@ -30,7 +40,6 @@ class Field:
             alias_include_name=True,
             exact_match=True,
             normalize=None,
-
     ):
         self.name = name
         self.alias = alias
@@ -41,16 +50,16 @@ class Field:
         self.sheetname = None
         self.col = None
 
-    @property
-    def all_alias(self):
+    def get_aliases(self, include_field_name=False):
         """The values compared to when locating the field in a worksheet.
 
         Returns:
-            set: all
+            set:
 
         See Also:
             parameters: :obj:`alias`, :obj:`alias_include_name`
         """
+
 
         # Normalize self.alias to a set
         if self.alias is None:
@@ -70,7 +79,7 @@ class Field:
 
 if __name__ == '__main__':
     mylist = set('bye forty'.split())
-    f = Field(
+    f = FieldParser(
         'hello',
         # alias=mylist,
         alias_include_name=False,

@@ -1,5 +1,5 @@
 import pytest
-from excelerator import TableReader
+from excelerator import TableParser
 from collections import namedtuple
 
 
@@ -25,9 +25,9 @@ def test_table_simple_top(sheetname, fixture_path, expected_fields):
     # GIVEN tabular data whose headers are in row 1...
 
     # WHEN user reads worksheet with *all* defaults...
-    tr = TableReader(
+    tr = TableParser(
         path=fixture_path,
-        sheetname=sheetname,
+        worksheet=sheetname,
     )
 
     # THEN all fields with unique, non-None headers get outputted.
@@ -43,10 +43,10 @@ def test_table_simple_top(worksheet_given: WorksheetGiven, fixture_path, expecte
     sheetname, header_row_num = worksheet_given
 
     # WHEN user sets *just* the header row...
-    tr = TableReader(
+    tr = TableParser(
         header_row_num=header_row_num,
         path=fixture_path,
-        sheetname=sheetname,
+        worksheet=sheetname,
     )
 
     # THEN all fields with unique, non-None headers get outputted.
@@ -84,10 +84,10 @@ def test_table_simple_seek_header(
 
     # WHEN a user desires a specific set of fields...
     fields = desired_and_actual_fieldnames.fields
-    tr = TableReader(
+    tr = TableParser(
         fields=fields,
         path=fixture_path,
-        sheetname=sheetname,
+        worksheet=sheetname,
     )
 
     # THEN the header row is found automatically and only those fields passed

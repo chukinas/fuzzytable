@@ -2,6 +2,9 @@
 Change Log
 ----------
 
+v0.7
+----
+- terminology change: ``TableParser``, ``FieldParser``, ``WorksheetParser``
 
 v0.6
 ----
@@ -9,7 +12,6 @@ v0.6
     - moved ``path`` and ``sheetname`` parameters from ``get_fields`` and ``get_records`` methods to ``TableReader()``
     - converted normalize functions to classes.
     - updated documentation
-
 
 v0.5
 ----

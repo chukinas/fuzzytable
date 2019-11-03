@@ -13,31 +13,52 @@ from excelerator.main import headers
 
 
 FieldSummary = collections.namedtuple("FieldSummary", "header_name col_num field_name norm_func")
+# This class for internal use. It stores information about each field to make data output simpler.
+
+#  :obj: ``
 
 
-class TableReader:
-    """Reads Excel tabular data.
+class TableParser:
+    """Parses excel data.
 
-    Instantiating a TableReader object supplies all the rules for how to read tabular data (such as what
-    fields/headers to look for; which row to look in). The TableReader's methods are where you supply
-    the worksheet to be read and how you want the data to be outputted (e.g. as list of records,
-    or dict of fields).
+    Pulling data from an excel sheet is a 2-step process.
+    First, instantiate a TableReader object. The arguments you supply define how the data will be parsed.
+    Second, call one of the TableReader's *get* methods
+    (e.g. :obj:`get_records()` or :obj:`get_fields()`) to output the data in the desired format.
 
     Args:
-        fields (:obj:`list` of :obj:`str`, :obj:`str`, default `None`)
-            If supplied, TableReader only outputs fields whose headers match a string in this list.
+        worksheet (:obj:`str`, ``excelerator.WorksheetParser``, \
+            :obj:`openpyxl.worksheet.worksheet.Worksheet`, or :obj:`list` thereof):
+            * If :obj:`str`, parse the worksheet with this title.
+            * If ``WorksheetParser``, similar to ``str``, but will additional options.
+            * If :obj:`Worksheet`, parse this openpyxl worksheet object.
+              Overrides ``path`` parameter.
 
-            Behavior modified by: :attr:`approximate_match`
+            ``list`` may contain a combination of the above types. This will return multiple tables.
+            Todo:
+                Only :obj:`str` is currently implemented. Need to implement the rest.
+        fields (:obj:`str`, ``excelerator.FieldParser`` or :obj:`sequence` thereof, default :obj:`None`)
+            * If ``None``, generate fields for each non-``None`` cell found in ``header_row_num`` row.
+            * If ``str``, TableParser looks for cell with this exact value and returns the data below it.
+            * If ``FieldParser``, like ``str`` but with additional options.
+              See :obj:`excelerator.FieldParser` for details.
 
-            For more options, pass a list of :obj:`excelerator.Field` objects.
-        header_row_num (:obj:`int` -or- default :obj:`None`): fdsfas
-            If None (default), headers are assumed to be in row 1, with data starting on row 2.
-            If supplied with an int, this is where the header row is assumed to be.
-        path (:obj:`str` ::or:: :obj:`pathlib.Path` ::or:: default :obj:`None`): fdfdsa
-            Path to workbook. Raise error if not found.
-        sheetname (:obj:`str`): Worksheet name.
-            Raise error if not found. **NOTE** Current version supports only `str` input.
-        normalize (:obj:`list` of :obj:`excelerator.normalize.NORM_TYPE()`, default :obj:`None`): fdsfds
+            ``sequence`` may contain multiple types of the above.
+            Todo:
+                Only ``list`` of :obj:`str` is currently implemented. Need to implement the rest.
+        header_row_num (:obj:`int`, default :obj:`None`):
+            * If ``None`` (default), headers are assumed to be in row 1, with data starting on row 2.
+            * If ``int``, this is where the header row is assumed to be.
+        seek_header_row (:obj:`bool`, ``int``, default :obj:`False`):
+            * If ``True``, override ``header_row_num``. If ``worksheet``,
+              find the best match row in the first ``potential_header_rows`` rows.
+              Otherwise, use the first non-None row.
+            * If ``False``, headers row = ``header_row_num``.
+        potential_header_rows (:obj:`int`, default :obj:`20`): If ``seek_header_row``,
+            this is the number of rows that TableParser will look through
+            to find the best match header_row_num.
+        path (:obj:`str`, :obj:`pathlib.Path`, default :obj:`None`): Path to workbook.
+        normalize (:obj:`list` of :obj:`excelerator.normalize.NormalizeBase`, default :obj:`None`):
             No effect if `fields` is `None`.
             If fields is supplied, then the normalize functions are applied to the corresponding field.
             Use normalization functions when you want to guarantee you get the data types you want.
@@ -48,10 +69,8 @@ class TableReader:
         aliases (``list`` of ``str``, ``list`` of ``list`` of ``str``, default ``None``)
         aliases_only (``bool``, default ``False``): fdsafdsa
 
-    Warning:
-        All ``Other Parameters`` are not yet implemented.
-
-        Passing these arguments does nothing. No errors are raised.
+    Todo:
+        Implement ``Other Parameters``.
 
     Raises:
         :obj:`excelerator.exceptions.ExceleratorError`: stuff
@@ -59,44 +78,30 @@ class TableReader:
                 if sheetname not found
         FileNotFound: if file not found
 
-    Examples:
-        >>> from excelerator import TableReader
-        >>> tr = TableReader(
+    Example:
+        >>> from excelerator import TableParser
+        >>> tr = TableParser(
                 fields='first_name last_name'.split(),
             )
         >>> fields = tr.get_fields(path='path/to/excel.xlsx', sheetname='names')
-    #
-    #     There are two ways to use them.
-    #         - First, send just
-    #
-    #         Note:
-    #         Here's a potential "gotcha". It's important that you always call the function. Example:
-    #
-    #         ``
-    #         from excelerator import TableReader, normalize
-    #
-    #         tr = TableReader(
-    #         fields='first_name last_name'.split(),
-    #         normalize=normalize.STRING(),
-    #         )
-    #         ``
-
     """
 
     def __init__(
             self,
+            worksheet,
+            path=None,
             fields=None,
             header_row_num=None,
             normalize=None,
-            path=None,
-            sheetname=None,
+            seek_header_row=False,
+            potential_header_rows=20,
             approximate_match=False,
     ):
         self._ws = None
         self.fields = fields
         self.header_row_num = header_row_num
         self.norm_funcs = normalize
-        self.sheetname = sheetname  # TODO rename to sheetnames
+        self.sheetname = worksheet  # TODO rename to sheetnames
         self.path = path
 
     def get_records(self):
@@ -144,10 +149,10 @@ class TableReader:
 
     @property
     def header_row_num(self):
-        """int: This is the row the TableReader will look for the header row.
+        """int: This is the row the TableParser will look for the header row.
             The next row is the first record.
 
-        See the TableReader header_row_num parameter for add'l notes.
+        See the TableParser header_row_num parameter for add'l notes.
         """
         if isinstance(self._header_row_num, int):
             pass
