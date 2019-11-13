@@ -7,46 +7,67 @@ This library was developed to meet the needs of projects relying on spreadsheet 
 
 fuzzytable allows you to quickly extract that data instead of arduously QC'ing the data ahead of time. After extraction, you can query the FuzzyTable attributes to e.g. determine which fields were found and how closely the desired header matches the actual header.
 
-# Features
-- Seek specific fields or extract them all. 
-- Find the best-fit table from a specific sheet or anywhere in the spreadsheet.
-- Set the header row or have fuzzytable find it.
-- Normalize the data - either for the entire table or per field. (to be implemented...)
-- Allow exact or approximate header matches.
-- Enable or suppress exceptions for missing fields. 
+# Installation
 
-# Documentation
+```shell
+pip install fuzzytable
+```
 
-- [readthedocs](https://fuzzytable.readthedocs.io/)  
+# Example Usage
+
+Here's a light-hearted demo. To read this messy file using, say, the csv module, we'd have to first:
+- Delete rows 1 and 2.
+- Delete columns A and B.
+- Rename the headers. 
+
+| A         | B 	| C          	| D      	    | E 	|
+|----------	|-----	|------------	|----------	    |--------	|
+| These    	| are 	| not        	| the      	    | droids 	|
+| you      	| are 	| looking    	| for.     	    | He     	|
+| can      	| go  	| c o l o r     | first name 	| GivenName	|
+| about    	| his 	| Gold   	    | C          	| 3PO      	|
+| business 	| .   	| Blue   	    | R2         	| D2       	|
+
+Let's instead leverage the FuzzyTable class.
+
+```bash
+>>> from fuzzytable import FuzzyTable
+
+>>> droids = FuzzyTable(
+...     path='droids.csv',
+...     fields=['first_name', 'last_name', 'color'],
+...     approximate_match=True,
+...     min_ratio=.3
+... )
+```
+
+Now let's play with the data we've extracted.
+
+```bash
+>>> droids['color']
+['Gold', 'Blue']
+
+>>> for droid in droids.records:
+...     print(f"{droid['first_name']}-{droid['last_name']} is {droid['color']}.")
+C-3PO is Gold.
+R2-D2 is Blue.
+
+>>> droids.fields['first_name'].col_num
+3
+
+>>> droids.sheet.header_row
+2
+```
+
+# Links
+
+- Documentation (tutorials, etc): [fuzzytable.readthedocs.io](https://fuzzytable.readthedocs.io/)
+- PyPI: [pypi.org/project/fuzzytable](https://pypi.org/project/fuzzytable/)
+- github: [github.com/jonathanchukinas/fuzzytable](https://github.com/jonathanchukinas/fuzzytable)
+- Submit issues: [github.com/jonathanchukinas/fuzzytable/issues](https://github.com/jonathanchukinas/fuzzytable/issues)
 
 # Supported Formats
 - Excel (.xlsx, .xlsm, .xltx, .xltm)
 - csv (.csv)
 
 Basically, anything that can be read by the openpyxl or csv modules. 
-
-# Installation
-
-```powershell
-# terminal
-pip install fuzzytable
-```
-
-# Example Usage
-
-```python
-# python
-
-from fuzzytable import FuzzyTable
-
-path = 'path/to/excel/sheet.xlsx'
-sheetname = 'worksheet name'
-fields = ['first_name', 'last_name', 'birthday']
-ft = FuzzyTable(
-    path=path,
-    sheetname=sheetname,
-    fields=fields
-)
-```
-
-

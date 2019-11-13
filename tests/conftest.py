@@ -11,6 +11,13 @@ import names
 pass
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "simple: When a code change breaks everything, runs the tests marked as simple to start. "
+    )
+
+
+
 # --- path to excel sheet -----------------------------------------------------
 test_files_path = Path(__file__).parent / 'test_files'
 
@@ -86,17 +93,19 @@ name_fields = {
 }
 
 
-@pytest.fixture(scope='function')
-def names_csv_path():
+@pytest.fixture(scope='session')
+def names_csv_path_and_fields():
     names_records = fields_to_records(name_fields)
-    names_path = test_files_path / 'names.csv'
+    temp_dir = test_files_path / 'temp'
+    temp_dir.mkdir(exist_ok=True)
+    names_path = temp_dir / 'names.csv'
     names_path.touch()
     with open(str(names_path), "w", newline='') as csvfile:
         csvwriter = csv.DictWriter(csvfile, fieldnames='first_name last_name'.split())
         csvwriter.writeheader()
         csvwriter.writerows(names_records)
     # with open(names_path):
-    return names_path
+    return names_path, name_fields
     # names_path.unlink()
 
 

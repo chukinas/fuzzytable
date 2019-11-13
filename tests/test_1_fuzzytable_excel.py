@@ -26,7 +26,7 @@ def filtered_dict(orig_dict, keys):
     return {key: orig_dict[key] for key in keys}
 
 
-FieldsAndResult = namedtuple('FieldsAndResult', 'fields expected_field_names')
+FieldsAndResult = namedtuple('FieldsAndResult', 'field_names expected_field_names')
 fields_and_results = [
     FieldsAndResult('first_name last_name last_appearance'.split(),
                     'first_name last_name last_appearance'.split()),
@@ -49,7 +49,7 @@ def test_excel_simple(sheetname, test_path, dr_who_fields):
         sheetname=sheetname,
     )
 
-    # THEN all fields with unique, non-None headers get outputted.
+    # THEN all field_names with unique, non-None headers get outputted.
     ft_dict = dict(ft)
     actual_output = dict(ft)
     expected_output = dr_who_fields
@@ -70,7 +70,7 @@ def test_excel_given_row(worksheet_given: WorksheetGiven, test_path, dr_who_fiel
         header_row=header_row_num,
     )
 
-    # THEN all fields with unique, non-None headers get outputted.
+    # THEN all field_names with unique, non-None headers get outputted.
     actual_output = dict(tr)
     expected_output = dr_who_fields
     assert actual_output == expected_output
@@ -79,7 +79,7 @@ def test_excel_given_row(worksheet_given: WorksheetGiven, test_path, dr_who_fiel
 @pytest.mark.parametrize('worksheet_given', worksheetgivens)
 @pytest.mark.parametrize('desired_and_actual_fieldnames', fields_and_results)
 ###  3  ###
-def test_table_simple_seek_header(
+def test_3_table_simple_seek_header(
         worksheet_given: WorksheetGiven,
         desired_and_actual_fieldnames: FieldsAndResult,
         test_path,
@@ -89,8 +89,8 @@ def test_table_simple_seek_header(
     # GIVEN a spreadsheet whose header row may/not start in cell 'A1'...
     sheetname, header_row_num = worksheet_given
 
-    # WHEN a user desires a specific set of fields...
-    fields = desired_and_actual_fieldnames.fields
+    # WHEN a user desires a specific set of field_names...
+    fields = desired_and_actual_fieldnames.field_names
     ft = FuzzyTable(
         path=test_path(),
         sheetname=sheetname,
@@ -98,7 +98,7 @@ def test_table_simple_seek_header(
         header_row_seek=True,
     )
 
-    # THEN the header row is matched automatically and only those fields passed
+    # THEN the header row is matched automatically and only those field_names passed
     #   as arguments are returned.
     actual_output = dict(ft)
     expected_output = filtered_dict(dr_who_fields, desired_and_actual_fieldnames.expected_field_names)

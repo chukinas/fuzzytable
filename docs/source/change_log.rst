@@ -6,3 +6,7 @@ Change Log
 -----------------------------------
 - rebrand EXCELerator to fuzzytable
 - rebuild data model
+
+0.9-alpha (2019 Nov 14)
+-----------------------------------
+- added approximate matching

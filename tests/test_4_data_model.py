@@ -1,13 +1,15 @@
 import pytest
 from tests.conftest import get_dr_who_records
 
+
+@pytest.mark.simple
 ###  1  ###
-def test_second_record_equality(ft_dr_who_all_fields, dr_who_records):
+def test_1_second_record_equality(ft_dr_who_all_fields, dr_who_records):
 
     # GIVEN a sheet containing the following record...
     expected_second_record = dr_who_records[1]
 
-    # WHEN user successfully extracts all fields from the sheet...
+    # WHEN user successfully extracts all field_names from the sheet...
     ft = ft_dr_who_all_fields
     ft.records.include_row_num = False
     actual_second_record = ft.records[1]
@@ -26,12 +28,12 @@ def test_second_record_equality(ft_dr_who_all_fields, dr_who_records):
     False
 ])
 ###  2  ####
-def test_records_equality(ft_dr_who_all_fields, records_equal, convert_to_dict_list):
+def test_2_records_equality(ft_dr_who_all_fields, records_equal, convert_to_dict_list):
 
     # GIVEN a sheet containing the following table...
     expected_records, compare_equal = records_equal
 
-    # WHEN user successfully extracts all fields from the sheet...
+    # WHEN user successfully extracts all field_names from the sheet...
     ft = ft_dr_who_all_fields
     ft.records.include_row_num = False
     # ft.records.include_row_num = False
@@ -94,7 +96,7 @@ def test_records_missing_field(ft_dr_who_some_fields, dr_who_records):
     # GIVEN a sheet containing the following table...
     expected_records = dr_who_records
 
-    # WHEN user extracts only some fields...
+    # WHEN user extracts only some field_names...
     ft = ft_dr_who_some_fields
     actual_records = ft.records
 

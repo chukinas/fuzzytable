@@ -5,7 +5,7 @@ providing more advanded field search options.
 """
 
 # --- Standard Library Imports ------------------------------------------------
-from typing import List, Union
+from typing import List, Union, Optional
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable import exceptions
@@ -16,10 +16,10 @@ from fuzzytable.main.utils import get_repr
 
 
 class FieldPattern:
-    """Optional argument for  :obj:`exclerator.FuzzyTable` :obj:`fields` parameter.
+    """Optional argument for  :obj:`exclerator.FuzzyTable` :obj:`field_names` parameter.
 
     When using ``FieldPattern``, typically you will pass a sequence of them to a
-    ``FuzzyTable`` as ``fields`` parameter. The ``FuzzyTable`` generally finds the row in a worksheet that best
+    ``FuzzyTable`` as ``field_names`` parameter. The ``FuzzyTable`` generally finds the row in a worksheet that best
     matches each FieldPattern object.
 
     Args:
@@ -55,18 +55,38 @@ class FieldPattern:
             name,
             alias=None,
             alias_include_name=True,
-            exact_match=True,
-            normalize=None,
+            approximate_match: Optional[bool] = None,
+            min_ratio: Optional[None] = None
     ):
         self.name = name
         self.alias = alias
         self.alias_include_name = alias_include_name
+        self.approximate_match = bool(approximate_match)
+        self.min_ratio = min_ratio
 
         # These are not set yet.
         self.path = None
         self.sheetname = None
         self.col = None
         self.matched = False
+
+    @property
+    def min_ratio(self):
+        return self._min_ratio
+
+    @min_ratio.setter
+    def min_ratio(self, value):
+        if value is None:
+            self._min_ratio = 0.6
+            return
+        try:
+            if 0.0 < value and value <= 1.0:
+                self._min_ratio = value
+                return
+        except TypeError:
+            raise exceptions.InvalidRatioError(value)
+        raise exceptions.InvalidRatioError(value)
+
 
     # def get_aliases(self, include_field_name=False):
     #     """The values compared to when locating the field in a worksheet.
@@ -102,25 +122,38 @@ class FieldPattern:
         return get_repr(self)  # pragma: no cover
 
 
-def get_fieldpatterns(fields: Union[None, List[FieldPattern], List[str]]) -> List:
+def get_fieldpatterns(
+        field_names: Optional[Union[str, List[str]]],
+        header_approximate_match: Optional[bool],
+        header_min_ratio: Optional[bool],
+) -> List:
     # Get a clean iterable of FieldPattern objects
 
-    if fields is None:
+    if field_names is None:
         return []
-    elif isinstance(fields, str):
-        return [FieldPattern(fields)]
-    # elif isinstance(fields, FieldPattern):
-    #     return [fields]
+    elif isinstance(field_names, str):
+        return get_fieldpatterns(
+            field_names=[field_names],
+            header_approximate_match=header_approximate_match,
+            header_min_ratio=header_min_ratio,
+        )
+    # elif isinstance(field_names, FieldPattern):
+    #     return [field_names]
 
     # If we've gotten here, then we're dealing with an iterable of some sort
+    # We're also assuming it's an iterable of strings.
+    # Later, a FieldPattern may also be passed.
+    fieldpatterns = []
     try:
-        return [
-            field if isinstance(field, FieldPattern) else FieldPattern(field)
-            for field in fields
-        ]
+        for field_name in field_names:
+            fieldpatterns.append(FieldPattern(
+                name=field_name,
+                approximate_match=header_approximate_match,
+                min_ratio=header_min_ratio,
+            ))
     except TypeError:
-        raise exceptions.InvalidFieldError(fields)
-
+        raise exceptions.InvalidFieldError(field_names)
+    return fieldpatterns
 
 if __name__ == '__main__':
     pass

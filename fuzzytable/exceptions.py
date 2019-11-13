@@ -37,11 +37,17 @@ class InvalidFieldError(FuzzyTableError):
         if fields is None:
             message = f"Fields argument must be supplied if header_row_seek. You entered {fields}."
         else:
-            message = f"Fields must string or iterable thereof. You entered {fields}."
+            message = f"Fields must be a string or iterable thereof. You entered {fields}."
         super().__init__(message)
 
 
 class InvalidSeekError(FuzzyTableError, TypeError):
     def __init__(self, header_seek_param):
         message = f"header_seek must be True or a positive integer. You entered {header_seek_param}."
+        super().__init__(message)
+
+
+class InvalidRatioError(FuzzyTableError):
+    def __init__(self, min_ratio):
+        message = f"FuzzyTable min_ratio must be a number gt 0, lt 1. You passed {min_ratio}"
         super().__init__(message)

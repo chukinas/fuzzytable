@@ -45,7 +45,7 @@ class Records(collections.abc.Sequence):
             header_row_num=self.header_row_num,
             sheet_row_count=self.header_row_num + len(self)
         )
-        self.include_row_num = include_row_num  # this has to come after self.fields and .row_field
+        self.include_row_num = include_row_num  # this has to come after self.field_names and .row_field
 
     @property
     def include_row_num(self):

@@ -16,7 +16,7 @@ from fuzzytable import exceptions
 from fuzzytable import datamodel
 from fuzzytable import patterns
 from fuzzytable.main import sheetreader
-from fuzzytable.main.string_analysis import row_ratio
+from fuzzytable.parsers.fieldparser import FieldParser
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -44,7 +44,7 @@ class SheetParser:
             sheet_reader=sheet_reader,
         )
 
-        # --- collect sheet fields --------------------------------------------
+        # --- collect sheet field_names --------------------------------------------
         header_values = sheet_reader[actual_header_row]
         all_ws_fields = [
             datamodel.Field(header=header, col_num=col_num)
@@ -53,20 +53,21 @@ class SheetParser:
         ]
 
         # --- find matches ----------------------------------------------------
-        if fieldpatterns:
-            # Use only those fields matching the desired fields
-            for field_pattern in fieldpatterns:
-                find_exact_match(field_pattern, all_ws_fields)
-        # else:
-        #     # Fields weren't speficied. Use all found fields
-        #     for ws_field in all_ws_fields:
-        #         ws_field.matched = True
+        fieldparsers = [FieldParser(fieldpattern, all_ws_fields) for fieldpattern in fieldpatterns]
+        while True:
+            available_fieldparsers = filter(lambda fp: fp.still_seeking, fieldparsers)
+            try:
+                bestfit_fieldparser = max(available_fieldparsers, key=lambda fp: fp.bestfit_ratio)
+            except ValueError:
+                # No more available fieldparsers.
+                break
+            bestfit_fieldparser.assign_bestfit_field()
 
         ############################
         #  Fuzzy Table Data Model  #
         ############################
 
-        # --- fuzzy table data model: fields ----------------------------------
+        # --- fuzzy table data model: field_names ----------------------------------
         if fieldpatterns:
             self.fields = list(filter(lambda f: f.matched, all_ws_fields))
         else:
@@ -116,7 +117,7 @@ def header_row_and_ratio(
         else:
             raise exceptions.InvalidRowError(given_header_row)
         header_row_str = sheet_reader.get_row_str(actual_header_row_num)
-        header_row_ratio = row_ratio(fieldpatterns, header_row_str)
+        header_row_ratio = FieldParser.row_ratio(fieldpatterns, header_row_str)
         return actual_header_row_num, header_row_ratio
 
     # --- header row seek -------------------------------------------------
@@ -133,29 +134,13 @@ def header_row_and_ratio(
     best_row_num = None
     best_ratio = NEG_INFINITY
     for row_num, row_str in enumerate(sheet_reader.iter_row_str(end_row=header_seek_final_row), 1):
-        ratio = row_ratio(fieldpatterns, row_str)
+        ratio = FieldParser.row_ratio(fieldpatterns, row_str)
         if ratio > best_ratio:
             best_ratio = ratio
             best_row_num = row_num
     actual_header_row_num = best_row_num
     header_row_ratio = best_ratio
     return actual_header_row_num, header_row_ratio
-
-
-def find_exact_match(field_pattern: patterns.FieldPattern, ws_fields: List[datamodel.Field]) -> None:
-    # If this pattern hasn't already matched a match, find an exact match (if available)
-    # If found, updates the state of both the field and the field pattern
-
-    # 20191111: This isn't need yet. Will uncomment when implementing approximate matching.
-    # if field_pattern.matched:
-    #     return
-
-    for ws_field in filter(lambda f: not f.matched, ws_fields):
-        if field_pattern.name == ws_field.header:
-            field_pattern.matched = True
-            ws_field.matched = True
-            ws_field.name = field_pattern.name
-            return
 
 
 if __name__ == "__main__":

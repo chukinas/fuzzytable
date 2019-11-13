@@ -17,13 +17,13 @@ class Field:
     """
     Represents a single column of your table.
 
-    A single FuzzyTable object will have several Field objects, stored as a list in ``FuzzyTable.fields``.
+    A single FuzzyTable object will have several Field objects, stored as a list in ``FuzzyTable.field_names``.
     Field objects are the source of truth for table contents.
-    Remove a field from ``FuzzyTable.fields`` and it disappears from the ``FuzzyTable`` and ``FuzzyTable.records`` views as well.
+    Remove a field from ``FuzzyTable.field_names`` and it disappears from the ``FuzzyTable`` and ``FuzzyTable.records`` views as well.
 
     >>> import fuzzytable
     >>> ft = fuzzytable.FuzzyTable('birthdays.csv')
-    >>> first_name = ft.fields[0]
+    >>> first_name = ft.field_names[0]
     >>> first_name.col_num
     1
     >>> first_name.data
@@ -54,6 +54,7 @@ class Field:
         self._name = name
         self.matched = False
         self.data = None
+        self.ratio = None
 
         # populated during later step after all matching is done
 

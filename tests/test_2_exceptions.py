@@ -80,23 +80,23 @@ def test_excel_missing_worksheet(test_path):
     True,
     20
 ])
-@pytest.mark.parametrize("fields", [
+@pytest.mark.parametrize("field_names", [
     None,
     FuzzyTable,
     1
 ])
 ###  3  ###
-def test_seek_but_no_fields(test_path, header_row_seek, fields):
+def test_seek_but_no_fields(test_path, header_row_seek, field_names):
 
     # GIVEN a table whose headers are NOT in row 1...
     path = test_path('csv')
 
-    # WHEN user seeks header row without supplying needed or correct fields...
+    # WHEN user seeks header row without supplying needed or correct field_names...
     try:
         FuzzyTable(
             path=path,
             header_row_seek=header_row_seek,
-            fields=fields,
+            fields=field_names,
         )
 
     # THEN InvalidFieldError is raised.
@@ -113,7 +113,7 @@ def test_error_from_invalid_headerseek(test_path):
     path = test_path('csv')
 
     # WHEN instantiates fuzzytable with
-    #   valid fields argument but
+    #   valid field_names argument but
     #   invalid header_seek argument...
     try:
         FuzzyTable(
@@ -127,3 +127,35 @@ def test_error_from_invalid_headerseek(test_path):
         assert True
     else:
         assert False
+
+
+###  5  ###
+@pytest.mark.parametrize("minratio", [
+    'this produces a TypeError',
+    -234,
+    1.1,
+])
+@pytest.mark.parametrize("fieldnames,error", [
+    ('first_name', exceptions.InvalidRatioError),
+    (None, None),
+])
+def test_invalid_min_ratio(fieldnames, minratio, error, names_csv_path_and_fields):
+
+    # GIVEN invalid min_ratios
+    min_ratio = minratio
+
+    # WHEN fuzzytable is instantiated
+    path, expected_fields = names_csv_path_and_fields
+    fields = fieldnames
+    try:
+        FuzzyTable(
+            path=path,
+            fields=fields,
+            min_ratio=min_ratio,
+        )
+
+    # THEN an exception is raised if ...
+    except exceptions.InvalidRatioError as e:
+        assert type(e) == error
+    else:
+        assert error is None

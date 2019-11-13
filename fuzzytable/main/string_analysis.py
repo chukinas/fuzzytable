@@ -3,51 +3,31 @@ These are string-matching functions for finding the best-fit header row.
 """
 
 # --- Standard Library Imports ------------------------------------------------
-from typing import List
 
 # --- Intra-Package Imports ---------------------------------------------------
-from fuzzytable.patterns import FieldPattern
+
 
 # --- Third Party Imports -----------------------------------------------------
 # None
 
 
-def row_ratio(fieldpatterns: List[FieldPattern], headers_string: str) -> float:
-    if not fieldpatterns:
-        return 0.0
-    individual_ratios = (
-        fieldpattern_ratio(fieldpattern, headers_string)
-        for fieldpattern in fieldpatterns
-    )
-    total = sum(individual_ratios)
-    average = total / len(fieldpatterns)
-    return average
+# try:
+#     from fuzzywuzzy import fuzz
+#     usefuzzwuzzy = True
+# except ImportError:
+#     usefuzzwuzzy = False
+# from difflib import SequenceMatcher
 
 
-def fieldpattern_ratio(fieldpattern: FieldPattern, headers_string: str) -> float:
-    for term in fieldpattern.terms:
-        if term in headers_string:
-            return 1.0
-    return 0.0
-
-
-    # try:
-    #     from fuzzywuzzy import fuzz
-    #     usefuzzwuzzy = True
-    # except ImportError:
-    #     usefuzzwuzzy = False
-    # from difflib import SequenceMatcher
-
-
-    #
-    # SequenceMatcher()
-    # if sought is None:
-    #     return None
-    # # with warnings.catch_warnings():
-    # #     # I don't want the user seeing a message about Levenshtein
-    # #     # https://stackoverflow.com/questions/14463277/how-to-disable-python-warnings
-    # #     warnings.simplefilter("ignore")
-    # return fuzz.token_set_ratio(sought, str2)
+#
+# SequenceMatcher()
+# if sought is None:
+#     return None
+# # with warnings.catch_warnings():
+# #     # I don't want the user seeing a message about Levenshtein
+# #     # https://stackoverflow.com/questions/14463277/how-to-disable-python-warnings
+# #     warnings.simplefilter("ignore")
+# return fuzz.token_set_ratio(sought, str2)
 
 
 #
@@ -110,3 +90,6 @@ def fieldpattern_ratio(fieldpattern: FieldPattern, headers_string: str) -> float
 # #
 # #     # --- Return result -------------------------------------------------------
 # #     return result
+
+if __name__ == "__main__":
+    pass

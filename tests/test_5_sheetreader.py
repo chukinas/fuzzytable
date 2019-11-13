@@ -9,7 +9,7 @@
 #     # WHEN a table is extracted using headerseek of default 20...
 #     ft = FuzzyTable(
 #         path=path,
-#         fields='first_name',
+#         field_names='first_name',
 #         header_row_seek=True,
 #     )
 #

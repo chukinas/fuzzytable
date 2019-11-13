@@ -105,7 +105,7 @@
 #
 #     # WHEN an EXCELerator normalize function is applied to the field...
 #     tr = FuzzyTable(
-#         fields=[header],  make sure header_row_num overrides fields list
+#         field_names=[header],  make sure header_row_num overrides field_names list
 #         normalize=[normalize_param.norm_func],  make sure this also works as a single norm func
 #         path=fixture_path,
 #         source=sheetname,

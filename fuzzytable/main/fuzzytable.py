@@ -3,7 +3,7 @@ This is the library's API class. It delegates the heavy lifting to SheetParser.
 After instantiation / data extraction, the FuzzyTable object acts like a
 dictionary and is the main way for the user to interact with the extracted data.
 The user can interact with the data in three other ways:
-- fields
+- field_names
 - records
 - sheet
 """
@@ -17,8 +17,7 @@ from typing import Union, Optional, List
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns import SheetPattern
 from fuzzytable.patterns.fieldpattern import get_fieldpatterns
-from fuzzytable.main.sheetparser import SheetParser
-from fuzzytable import datamodel
+from fuzzytable.parsers.sheetparser import SheetParser
 
 
 # --- Third Party Imports -----------------------------------------------------
@@ -35,9 +34,6 @@ INITIAL = Initial()
 FieldSummary = collections.namedtuple("FieldSummary", "header_name col_num field_name norm_func")
 # This class for internal use. It stores information about each field to make data output simpler.
 
-# TODO read https://dbader.org/blog/write-a-great-readme-for-your-github-project
-# TODO review all other docstrings too
-# TODO Add license and make sure to link to it in readme
 
 class FuzzyTable(collections.abc.Mapping):
     """Extract a table from a spreadsheet.
@@ -47,7 +43,7 @@ class FuzzyTable(collections.abc.Mapping):
 
     - :obj:`~fuzzytable.FuzzyTable` as a dictionary (keys are field names; values are column data)
     - :obj:`FuzzyTable.records<fuzzytable.datamodel.Records>`: sequence of records represented as dictionaries.
-    - List of :obj:`FuzzyTable.fields<fuzzytable.datamodel.Field>` objects.
+    - List of :obj:`FuzzyTable.field_names<fuzzytable.datamodel.Field>` objects.
     - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional worksheet attributes (e.g. header row number, path).
 
     See tutorials:
@@ -69,8 +65,12 @@ class FuzzyTable(collections.abc.Mapping):
             * ``int``: n = header_row_seek
             * other truthy value: n = 20
         fields (:obj:`str` or iterable thereof, default :obj:`None`)
-            * ``None``: extract fields for each non-``None`` cell in header row.
-            * ``str`` or iterable thereof: extract matching fields matching a cell in the header row.
+            * ``None``: extract field_names for each non-``None`` cell in header row.
+            * ``str`` or iterable thereof: extract matching field_names matching a cell in the header row.
+        approximate_match (``bool``, default False): If True, fields will match if they are at
+            least 60% similar to the field names supplied. This cutout value can be set with min_ratio
+        min_ratio (``float``, default None): The minimum similarity threshold for matching headers.
+            Must be float 0.0 < x <= 1.0
 
     Attributes:
         records: Return :obj:`~fuzzytable.datamodel.Records` object, a generator yielding records (rows), each represented as a dictionary.
@@ -84,7 +84,6 @@ class FuzzyTable(collections.abc.Mapping):
             See :doc:`exceptions` for all other exceptions raised by FuzzyTable.
     """
 
-    # TODO include the visual data model in the tutorial somewhere
 
     def __init__(
             self,
@@ -94,11 +93,13 @@ class FuzzyTable(collections.abc.Mapping):
             header_row: Optional[int] = None,
             header_row_seek: Union[bool, int] = False,
             name: Optional[str] = None,
+            approximate_match=False,
+            min_ratio=None,
     ):
 
         sheet_reader = SheetPattern(path, sheetname).sheet_reader
-        desired_fields = get_fieldpatterns(fields)
-        sheet_parser = SheetParser(sheet_reader, desired_fields, header_row, header_row_seek)
+        field_patterns = get_fieldpatterns(fields, approximate_match, min_ratio)
+        sheet_parser = SheetParser(sheet_reader, field_patterns, header_row, header_row_seek)
 
         self.name = name
         self.fields = sheet_parser.fields
@@ -109,8 +110,6 @@ class FuzzyTable(collections.abc.Mapping):
             field.name: field.data
             for field in self.fields
         }
-
-    # TODO remember to correctly document return vs. yield
 
     def __len__(self):
         return len(self._fields_dict)
