@@ -3,8 +3,8 @@ from tests.conftest import get_dr_who_records
 
 
 @pytest.mark.simple
-###  1  ###
-def test_1_second_record_equality(ft_dr_who_all_fields, dr_who_records):
+# 1  #####
+def test4_1_second_record_equality(ft_dr_who_all_fields, dr_who_records):
 
     # GIVEN a sheet containing the following record...
     expected_second_record = dr_who_records[1]
@@ -27,8 +27,8 @@ def test_1_second_record_equality(ft_dr_who_all_fields, dr_who_records):
     True,
     False
 ])
-###  2  ####
-def test_2_records_equality(ft_dr_who_all_fields, records_equal, convert_to_dict_list):
+# 2  #####
+def test4_2_records_equality(ft_dr_who_all_fields, records_equal, convert_to_dict_list):
 
     # GIVEN a sheet containing the following table...
     expected_records, compare_equal = records_equal
@@ -51,8 +51,8 @@ def test_2_records_equality(ft_dr_who_all_fields, records_equal, convert_to_dict
         assert actual_records != expected_records
 
 
-###  3  ###
-def test_fields_dict_equality(ft_dr_who_all_fields, dr_who_fields):
+# 3  #####
+def test4_3_fields_dict_equality(ft_dr_who_all_fields, dr_who_fields):
 
     # GIVEN a sheet containing the following table...
     expected_dict = dr_who_fields
@@ -73,8 +73,8 @@ def test_fields_dict_equality(ft_dr_who_all_fields, dr_who_fields):
     print(ft.records.include_row_num)
 
 
-###  4  ###
-def test_records_rows(ft_dr_who_all_fields, dr_who_fields):
+#  4  #####
+def test4_4_records_rows(ft_dr_who_all_fields, dr_who_fields):
 
     # GIVEN a table with headers in row 4...
     expected_rows = list(range(5, 8))
@@ -90,8 +90,8 @@ def test_records_rows(ft_dr_who_all_fields, dr_who_fields):
     assert actual_rows == expected_rows
 
 
-###  5  ###
-def test_records_missing_field(ft_dr_who_some_fields, dr_who_records):
+# 5  #####
+def test4_5_records_missing_field(ft_dr_who_some_fields, dr_who_records):
 
     # GIVEN a sheet containing the following table...
     expected_records = dr_who_records
@@ -105,8 +105,8 @@ def test_records_missing_field(ft_dr_who_some_fields, dr_who_records):
     assert actual_records != [{'a': 1, 'b': 2}]*3
 
 
-###  6  ###
-def test_fuzzytable_keysvaluesitems(ft_dr_who_all_fields, dr_who_fields):
+# 6  #####
+def test4_6_fuzzytable_keysvaluesitems(ft_dr_who_all_fields, dr_who_fields):
 
     # GIVEN a table...
     expected_fields = dr_who_fields
@@ -123,8 +123,8 @@ def test_fuzzytable_keysvaluesitems(ft_dr_who_all_fields, dr_who_fields):
         assert ft_values == exp_values
 
 
-###  7  ###
-def test_fuzzyrecords_len(ft_dr_who_all_fields, dr_who_records):
+# 7  #####
+def test4_7_fuzzyrecords_len(ft_dr_who_all_fields, dr_who_records):
 
     # GIVEN a table...
     expected_records = dr_who_records

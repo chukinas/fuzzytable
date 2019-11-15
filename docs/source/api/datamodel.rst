@@ -5,9 +5,11 @@ Data Model
 ft.fields
 -----------------------------
 
-.. autoclass:: fuzzytable.datamodel.Field
+.. autoclass:: fuzzytable.datamodel.SingleField
    :members:
 
+.. autoclass:: fuzzytable.datamodel.MultiField
+   :members:
 
 ft.records
 -----------------------------

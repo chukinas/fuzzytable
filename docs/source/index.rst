@@ -12,6 +12,10 @@ Welcome to fuzzytable's documentation!
    change_log
 
 
+
+.. include:: ../../tests/test_doctest.rst
+
+
 ==================
 Indices and tables
 ==================

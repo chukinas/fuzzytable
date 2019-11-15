@@ -79,7 +79,20 @@ def dr_who_records(dr_who_fields):
     return get_dr_who_records()
 
 
-# --- names_generator -------------------------------------------------------------------
+# --- csv generator -----------------------------------------------------------
+def create_csv(path, fields):
+    path.touch()
+    headers = list(fields.keys())
+    records = fields_to_records(fields)
+    with open(str(path), "w", newline='') as csvfile:
+        csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
+        csvwriter.writeheader()
+        csvwriter.writerows(records)
+
+
+# --- test set: dr who --------------------------------------------------------
+
+# --- names_generator ---------------------------------------------------------
 
 class NamesFixture:
 
@@ -113,6 +126,39 @@ def names_fixture():
     return NamesFixture()
 
 
+# --- first_names -------------------------------------------------------------
+
+class FirstNames:
+
+    def __init__(self, path):
+        self.path = path / 'first_names.csv'
+        self.fields = self.get_fields()
+        self.records = fields_to_records(self.fields)
+        create_csv(self.path, self.fields)
+
+    @staticmethod
+    def get_fields():
+        return {
+            'id': list(range(3)),
+            'name 2': 'frank francis fran'.split(),
+            'name 1': 'susan suz susannah'.split(),
+            'name 3': 'james jim jimmy'.split(),
+        }
+
+    @property
+    def fieldnames(self):
+        return list(self.fields.keys())
+
+@pytest.fixture
+def first_names(tmp_path):
+    return FirstNames(tmp_path)
+
+
+@pytest.fixture(autouse=True)
+def doctest_firstnames(doctest_namespace, first_names):
+    doctest_namespace['path_firstnames'] = first_names.path
+
+
 # --- fuzzy tables ------------------------------------------------------------
 def ft_dr_who(field_names):
     path = get_test_path('csv')
@@ -132,6 +178,19 @@ def ft_dr_who_all_fields(dr_who_fields):
 def ft_dr_who_some_fields():
     field_names = 'first_name last_name'.split()
     return ft_dr_who(field_names)
+
+
+@pytest.fixture(autouse=True)
+def doctestnamespace(doctest_namespace):
+    doctest_namespace['path'] = 'happy'
+
+
+@pytest.fixture(autouse=True)
+def doctestnamespace2(doctest_namespace):
+    doctest_namespace['stuff'] = 'turkey'
+
+
+
 
 
 if __name__ == "__main__":

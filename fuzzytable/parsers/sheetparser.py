@@ -8,7 +8,7 @@ the best-fit header row. Then, there will be one SheetParser per sheet.
 """
 
 # --- Standard Library Imports ------------------------------------------------
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from typing import List, Union
 
 # --- Intra-Package Imports ---------------------------------------------------
@@ -17,6 +17,7 @@ from fuzzytable import datamodel
 from fuzzytable import patterns
 from fuzzytable.main import sheetreader
 from fuzzytable.parsers.fieldparser import FieldParser
+from fuzzytable.datamodel import MultiField
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -47,7 +48,7 @@ class SheetParser:
         # --- collect sheet field_names --------------------------------------------
         header_values = sheet_reader[actual_header_row]
         all_ws_fields = [
-            datamodel.Field(header=header, col_num=col_num)
+            datamodel.SingleField(header=header, col_num=col_num)
             for col_num, header in enumerate(header_values, 1)
             if header
         ]
@@ -55,27 +56,55 @@ class SheetParser:
         # --- find matches ----------------------------------------------------
         fieldparsers = [FieldParser(fieldpattern, all_ws_fields) for fieldpattern in fieldpatterns]
         while True:
-            available_fieldparsers = filter(lambda fp: fp.still_seeking, fieldparsers)
+            available_fieldparsers = list(filter(lambda fp: fp.still_seeking, fieldparsers))
             try:
-                bestfit_fieldparser = max(available_fieldparsers, key=lambda fp: fp.bestfit_ratio)
+                bestfit_fieldparser = max(available_fieldparsers, key=lambda fp: fp._bestfit_ratio)
             except ValueError:
                 # No more available fieldparsers.
                 break
             bestfit_fieldparser.assign_bestfit_field()
 
+        # --- fuzzy table data model: field_names ----------------------------------
+        if fieldpatterns:
+            fields_matched = list(filter(lambda f: f.matched, all_ws_fields))
+        else:
+            fields_matched = all_ws_fields
+
+        # Assign data
+        data_row_start = actual_header_row + 1
+        for field in fields_matched:
+            data = sheet_reader.get_col(data_row_start, field.col_num)
+            field.data = data
+
+        fields_dict = defaultdict(list)
+        for field in fields_matched:
+            fieldname = field.name
+            fields_dict[fieldname].append(field)
+
+        multifield_names = [
+            fieldpattern.name
+            for fieldpattern in fieldpatterns
+            if fieldpattern.multifield
+        ]
+
+        single_fields = [
+            fieldlist[0]
+            for fieldname, fieldlist in fields_dict.items()
+            if fieldname not in multifield_names
+        ]
+
+        multi_fields = [
+            MultiField(fieldname, fieldlist)
+            for fieldname, fieldlist in fields_dict.items()
+            if fieldname in multifield_names
+        ]
+
+        fields = single_fields + multi_fields
+        self.fields = sorted(fields, key=lambda f: f.col_num)
+
         ############################
         #  Fuzzy Table Data Model  #
         ############################
-
-        # --- fuzzy table data model: field_names ----------------------------------
-        if fieldpatterns:
-            self.fields = list(filter(lambda f: f.matched, all_ws_fields))
-        else:
-            self.fields = all_ws_fields
-        data_row_start = actual_header_row + 1
-        for field in self.fields:
-            data = sheet_reader.get_col(data_row_start, field.col_num)
-            field.data = data
 
         # --- fuzzy table data madel: summary ---------------------------------
         self.sheet_summary = datamodel.Sheet(

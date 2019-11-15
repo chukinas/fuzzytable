@@ -17,21 +17,24 @@ from fuzzytable.main.utils import get_repr
 
 class FieldPattern:
     """
-    Optional argument for :obj:`FuzzyTable fields<fuzzytable.FuzzyTable>` parameter.
+    Optional argument for :obj:`FuzzyTable subfields<fuzzytable.FuzzyTable>` parameter.
 
     FieldPattern arguments override FuzzyTable arguments of the same name.
     In the following example,
     the ``first_name`` FieldPattern uses approximate matching while ``last_name`` uses exact matching.
 
     >>> from fuzzytable import FuzzyTable
-    >>> fields = [
+    >>> subfields = [
     ...     FieldPattern('first_name', approximate_match=False),
     ...     FieldPattern('last_name')
     ... ]
-    >>> FuzzyTable(approximate_match=True, fields=fields)
+    >>> FuzzyTable(approximate_match=True, subfields=subfields)
+
+
+
 
     Args:
-        name (``str``): Field name. This is the name that will given to a matched field.
+        name (``str``): SingleField name. This is the name that will given to a matched field.
             This parameter, along with any aliases supplied, are the search criteria.
         alias (``str`` or ``iterable`` thereof, default ``None``): Additional search criteria.
         approximate_match (``bool``, default ``None``): Overrides
@@ -45,13 +48,16 @@ class FieldPattern:
             name,
             alias=None,
             approximate_match: Optional[bool] = None,
-            min_ratio: Optional[float] = None
+            min_ratio: Optional[float] = None,
+            contains_match: [bool] = False,
+            multifield: [bool] = False,
     ):
         self.name = name
         self.alias = alias
-        # self.alias_include_name = alias_include_name
-        self.approximate_match = bool(approximate_match)
+        self.approximate_match = approximate_match
         self.min_ratio = min_ratio
+        self.contains_match = bool(contains_match)
+        self.multifield = bool(multifield)
 
         # These are not set yet.
         self.path = None

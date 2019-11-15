@@ -19,6 +19,7 @@ from fuzzytable.patterns import SheetPattern
 from fuzzytable.parsers import SheetParser
 from fuzzytable.patterns import FieldPattern
 from fuzzytable import exceptions
+from fuzzytable import datamodel
 
 
 # --- Third Party Imports -----------------------------------------------------
@@ -44,9 +45,9 @@ class FuzzyTable(collections.abc.Mapping):
 
     - :obj:`~fuzzytable.FuzzyTable` as a dictionary (keys are field names; values are column data)
     - :obj:`FuzzyTable.records<fuzzytable.datamodel.Records>`: sequence of records represented as dictionaries.
-    - List of :obj:`FuzzyTable.field_names<fuzzytable.datamodel.Field>` objects.
-    - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional
-        worksheet attributes (e.g. header row number, path).
+    - List of :obj:`FuzzyTable.field_names<fuzzytable.datamodel.SingleField>` objects.
+    - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional worksheet attributes (e.g. header row number, path).
+
 
     See tutorials:
 
@@ -69,7 +70,7 @@ class FuzzyTable(collections.abc.Mapping):
         fields (:obj:`str` or iterable thereof, default :obj:`None`)
             * ``None``: extract field_names for each non-``None`` cell in header row.
             * ``str`` or iterable thereof: extract matching field_names matching a cell in the header row.
-        approximate_match (``bool``, default False): If True, fields will match if they are at
+        approximate_match (``bool``, default False): If True, subfields will match if they are at
             least 60% similar to the field names supplied. This cutout value can be set with min_ratio
         min_ratio (``float``, default None): The minimum similarity threshold for matching headers.
             Must be float 0.0 < x <= 1.0
@@ -78,7 +79,7 @@ class FuzzyTable(collections.abc.Mapping):
     Attributes:
         records: Return :obj:`~fuzzytable.datamodel.Records` object,
             a generator yielding records (rows), each represented as a dictionary.
-        fields: Return list of :obj:`~fuzzytable.datamodel.Field` objects,
+        fields: Return list of :obj:`~fuzzytable.datamodel.SingleField` objects,
             with such attributes as ``name``, ``header``, ``data``, ``col_num``.
         sheet: Return :obj:`~fuzzytable.datamodel.Sheet` object,
             whose attributes store additional metadata about the worksheet.
@@ -122,7 +123,8 @@ class FuzzyTable(collections.abc.Mapping):
                     name=field,
                     alias=None,
                     approximate_match=approximate_match,
-                    min_ratio=min_ratio
+                    min_ratio=min_ratio,
+                    # No need to pass arguments that don't override the FuzzyTable defaults.
                 )
             if isinstance(field, FieldPattern):
                 # FieldPattern default values are overridden by parameters passed to FuzzyTable
@@ -138,7 +140,9 @@ class FuzzyTable(collections.abc.Mapping):
                     name=field.name,
                     alias=field.alias,
                     approximate_match=params['approximate_match'],
-                    min_ratio=params['min_ratio']
+                    min_ratio=params['min_ratio'],
+                    contains_match=field.contains_match,
+                    multifield=field.multifield,
                 )
 
         fieldpatterns = [generate_fieldpattern(field) for field in fieldpatterns]
@@ -157,7 +161,7 @@ class FuzzyTable(collections.abc.Mapping):
         self.sheet = sheet_parser.sheet_summary
         self.records = sheet_parser.records
         self._fields_dict = {
-            field.name: field.data
+            field.name: field
             for field in self.fields
         }
 
@@ -166,7 +170,7 @@ class FuzzyTable(collections.abc.Mapping):
 
     def __getitem__(self, item):
         # Return the data from a specified field
-        return self._fields_dict[item]
+        return self._fields_dict[item].data
 
     def __iter__(self):
         yield from self._fields_dict
@@ -194,3 +198,6 @@ class FuzzyTable(collections.abc.Mapping):
         fieldsrepr = reprlib.repr(fieldnames)
         obj_id = hex(id(self))
         return f"<{name} {fieldsrepr} {obj_id}>"
+
+    def get_field(self, fieldname: str) -> Optional[datamodel.Field]:
+        return self._fields_dict.get(fieldname)

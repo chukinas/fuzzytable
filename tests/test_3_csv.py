@@ -3,6 +3,7 @@ import pytest
 import collections
 from fuzzytable import exceptions
 from fuzzytable import FieldPattern
+from fuzzytable import datamodel
 
 
 @pytest.mark.parametrize('header_row', [
@@ -80,7 +81,7 @@ def test_header_row_errors(test_path, dr_who_fields, header_row):
         )
 
     # THEN InvalidRowError is raised.
-    except (exceptions.InvalidRowError):
+    except exceptions.InvalidRowError:
         assert True
     else:
         assert False
@@ -128,7 +129,84 @@ def test_user_generated_fieldpatterns(names_fixture):
         name='names',
     )
 
-    # THEN the same two fields are found.
+    # THEN the same two subfields are found.
     actual_field_count = len(names)
     expected_field_count = len(names_fixture.fields)
     assert actual_field_count == expected_field_count
+
+
+# 6  #####
+def test3_6_compare_fieldnames(first_names):
+
+    # GIVEN a table whose headers are NOT in row 1...
+    kwargs = {
+        'path': first_names.path,
+        'header_row_seek': True,
+        'fields': first_names.fieldnames,
+    }
+
+    # WHEN user seeks header row...
+    ft = FuzzyTable(**kwargs)
+
+    # THEN all desired field_names are extracted.
+    actual_fieldnames = list(ft.keys())
+    expected_fieldnames = first_names.fieldnames
+    assert actual_fieldnames == expected_fieldnames
+
+
+# 7  #####
+def test3_7_multifield(first_names):
+
+    # GIVEN a table containing three headers similar to 'name'...
+    path = first_names.path
+
+    # WHEN user extracts these columns into a single multifield...
+    min_ratio = 0.3
+    fields = [
+        'id',
+        FieldPattern('name', multifield=True, min_ratio=min_ratio),
+    ]
+    ft = FuzzyTable(
+        path=path,
+        approximate_match=True,
+        fields=fields,
+        header_row_seek=True,
+    )
+
+    # THEN both fields are extracted.
+    actual_fieldnames = list(ft.keys())
+    expected_fieldnames = 'id name'.split()
+    assert actual_fieldnames == expected_fieldnames
+
+    # THEN the 'name' field contains three subfields.
+    # namefield = ft.get_field('name')
+    name_field: datamodel.MultiField = ft.get_field('name')
+    actual_name_count = len(name_field.subfields)
+    expected_name_count = 3
+    assert actual_name_count == expected_name_count
+
+    # THEN the 'name' field's last column is 4:
+    actual_namefield_finalcol = name_field.col_num_last
+    expected_namefield_finalcol = 4
+    assert actual_namefield_finalcol == expected_namefield_finalcol
+
+    # THEN the 'name' multifield's data can be accessed as a dict:
+    actual_firstrow_names = name_field[0]
+    expected_firstrow_names = tuple('frank susan james'.split())
+    assert actual_firstrow_names == expected_firstrow_names
+    assert actual_firstrow_names == name_field.data[0]
+
+    # THEN the 'id' singlefield's data can be accessed as a dict:
+    id_field = ft.get_field('id')
+    actual_firstrow_id = id_field[0]
+    expected_firstrow_id = '0'
+    assert actual_firstrow_id == expected_firstrow_id
+
+    # THEN the len of both fields are equal
+    len_id = len(id_field)
+    len_name = len(name_field)
+    assert len_id == len_name == 3
+
+    assert name_field.header == ('name 2', 'name 1', 'name 3')
+
+    assert name_field.ratio >= min_ratio

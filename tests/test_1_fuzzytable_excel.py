@@ -54,7 +54,7 @@ fields_and_results = [
 
 
 @pytest.mark.parametrize('worksheet_given', worksheetgivens)
-###  2  ###
+# 2  #####
 def test_excel_given_row(worksheet_given: WorksheetGiven, test_path, dr_who_fields):
 
     # GIVEN a worksheet with header in a *known* row...
@@ -75,7 +75,7 @@ def test_excel_given_row(worksheet_given: WorksheetGiven, test_path, dr_who_fiel
 
 @pytest.mark.parametrize('worksheet_given', worksheetgivens)
 @pytest.mark.parametrize('desired_and_actual_fieldnames', fields_and_results)
-###  3  ###
+# 3  #####
 def test_3_table_simple_seek_header(
         worksheet_given: WorksheetGiven,
         desired_and_actual_fieldnames: FieldsAndResult,

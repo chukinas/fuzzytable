@@ -1,6 +1,6 @@
 """
 Second major piece of the FuzzyTable data model.
-Records class is essentially a view on the data stored in Field objects.
+Records class is essentially a view on the data stored in SingleField objects.
 """
 
 # --- Standard Library Imports ------------------------------------------------
@@ -9,8 +9,8 @@ from typing import List, Dict
 import itertools
 
 # --- Intra-Package Imports ---------------------------------------------------
-# from fuzzytable.datamodel import Field
-from fuzzytable.datamodel.fields import Field, RowField
+# from fuzzytable.datamodel import SingleField
+from fuzzytable.datamodel.fields import SingleField, RowField
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -25,12 +25,12 @@ class Records(collections.abc.Sequence):
     >>> ft.records[1]
     {'first_name': 'Typhoid', 'last_name': 'Mary', 'birthday': '2-Aug-83', 'row': 3}
 
-    Does not support deleting items. That must be done via :obj:`fuzzytable.datamodel.Field`
+    Does not support deleting items. That must be done via :obj:`fuzzytable.datamodel.SingleField`
     """
 
     def __init__(
         self,
-        fields: List[Field],
+        fields: List[SingleField],
         header_row_num: int,
         row_count: int,
         include_row_num: bool = True,
@@ -50,7 +50,7 @@ class Records(collections.abc.Sequence):
     @property
     def include_row_num(self):
         """
-        Default ``True``. If ``True``, **all** views will show an additional `row` Field.
+        Default ``True``. If ``True``, **all** views will show an additional `row` SingleField.
 
         >>> list(ft.keys())
         ['first_name', 'last_name', 'birthday', 'row']

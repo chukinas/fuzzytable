@@ -13,7 +13,7 @@ def test_approx_names(names_fixture, minratio, fieldcount):
     path = names_fixture.path
     min_ratio, expected_field_count = (minratio, fieldcount)
 
-    # WHEN the user desires the following slightly different fields...
+    # WHEN the user desires the following slightly different subfields...
     fields = ['first_name', 'given name', 'twas the night before christmas']
 
     # THEN the first name always matches; last name depends on the min_ratio
