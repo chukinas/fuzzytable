@@ -8,9 +8,6 @@ from collections import namedtuple
 # simple 4x3 table located in different corners of the worksheet
 WorksheetGiven = namedtuple('WorksheetGiven', 'sheetname header_row_num')
 worksheetgivens = [
-    WorksheetGiven('table_top_left', 1),
-    WorksheetGiven('table_top_right', 1),
-    WorksheetGiven('table_bottom_left', 4),
     WorksheetGiven('table_bottom_right', 4),
 ]
 
@@ -36,24 +33,24 @@ fields_and_results = [
                     'first_name last_name'.split()),
 ]
 
-###  1  ###
-@pytest.mark.parametrize('sheetname', sheetnames_with_headers_in_first_row)
-def test_excel_simple(sheetname, test_path, dr_who_fields):
 
-    # GIVEN tabular data whose headers are in row 1...
-    path = test_path()
-
-    # WHEN user reads worksheet with *all* defaults...
-    ft = FuzzyTable(
-        path=path,
-        sheetname=sheetname,
-    )
-
-    # THEN all field_names with unique, non-None headers get outputted.
-    ft_dict = dict(ft)
-    actual_output = dict(ft)
-    expected_output = dr_who_fields
-    assert actual_output == expected_output
+# @pytest.mark.parametrize('sheetname', sheetnames_with_headers_in_first_row)
+# ###  1  ###
+# def test_excel_simple(sheetname, test_path, dr_who_fields):
+#
+#     # GIVEN tabular data whose headers are in row 1...
+#     path = test_path()
+#
+#     # WHEN user reads worksheet with *all* defaults...
+#     ft = FuzzyTable(
+#         path=path,
+#         sheetname=sheetname,
+#     )
+#
+#     # THEN all field_names with unique, non-None headers get outputted.
+#     actual_output = dict(ft)
+#     expected_output = dr_who_fields
+#     assert actual_output == expected_output
 
 
 @pytest.mark.parametrize('worksheet_given', worksheetgivens)

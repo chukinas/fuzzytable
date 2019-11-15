@@ -12,12 +12,13 @@ The user can interact with the data in three other ways:
 import collections
 import reprlib
 from pathlib import Path
-from typing import Union, Optional, List
+from typing import Union, Optional, Iterable
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns import SheetPattern
-from fuzzytable.patterns.fieldpattern import get_fieldpatterns
-from fuzzytable.parsers.sheetparser import SheetParser
+from fuzzytable.parsers import SheetParser
+from fuzzytable.patterns import FieldPattern
+from fuzzytable import exceptions
 
 
 # --- Third Party Imports -----------------------------------------------------
@@ -44,7 +45,8 @@ class FuzzyTable(collections.abc.Mapping):
     - :obj:`~fuzzytable.FuzzyTable` as a dictionary (keys are field names; values are column data)
     - :obj:`FuzzyTable.records<fuzzytable.datamodel.Records>`: sequence of records represented as dictionaries.
     - List of :obj:`FuzzyTable.field_names<fuzzytable.datamodel.Field>` objects.
-    - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional worksheet attributes (e.g. header row number, path).
+    - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional
+        worksheet attributes (e.g. header row number, path).
 
     See tutorials:
 
@@ -71,11 +73,15 @@ class FuzzyTable(collections.abc.Mapping):
             least 60% similar to the field names supplied. This cutout value can be set with min_ratio
         min_ratio (``float``, default None): The minimum similarity threshold for matching headers.
             Must be float 0.0 < x <= 1.0
+        name (``str``, default None): Give this FuzzyTable instance a name.
 
     Attributes:
-        records: Return :obj:`~fuzzytable.datamodel.Records` object, a generator yielding records (rows), each represented as a dictionary.
-        fields: Return list of :obj:`~fuzzytable.datamodel.Field` objects, with such attributes as ``name``, ``header``, ``data``, ``col_num``.
-        sheet: Return :obj:`~fuzzytable.datamodel.Sheet` object, whose attributes store additional metadata about the worksheet.
+        records: Return :obj:`~fuzzytable.datamodel.Records` object,
+            a generator yielding records (rows), each represented as a dictionary.
+        fields: Return list of :obj:`~fuzzytable.datamodel.Field` objects,
+            with such attributes as ``name``, ``header``, ``data``, ``col_num``.
+        sheet: Return :obj:`~fuzzytable.datamodel.Sheet` object,
+            whose attributes store additional metadata about the worksheet.
 
     Raises:
         :obj:`fuzzytable.exceptions.FuzzyTableError`:
@@ -84,12 +90,11 @@ class FuzzyTable(collections.abc.Mapping):
             See :doc:`exceptions` for all other exceptions raised by FuzzyTable.
     """
 
-
     def __init__(
             self,
             path: Union[str, Path],
             sheetname: Optional[str] = None,
-            fields: Optional[Union[List[str], str]] = None,
+            fields: Optional[Union[Iterable[str], Iterable[FieldPattern], str]] = None,
             header_row: Optional[int] = None,
             header_row_seek: Union[bool, int] = False,
             name: Optional[str] = None,
@@ -97,15 +102,60 @@ class FuzzyTable(collections.abc.Mapping):
             min_ratio=None,
     ):
 
-        sheet_reader = SheetPattern(path, sheetname).sheet_reader
-        field_patterns = get_fieldpatterns(fields, approximate_match, min_ratio)
-        sheet_parser = SheetParser(sheet_reader, field_patterns, header_row, header_row_seek)
+        #################
+        # FieldPatterns #
+        #################
 
+        if fields is None:
+            fieldpatterns = []
+        elif isinstance(fields, (str, FieldPattern)):
+            fieldpatterns = [fields]
+        else:
+            try:
+                fieldpatterns = list(fields)
+            except TypeError:
+                raise exceptions.InvalidFieldError(fields)
+
+        def generate_fieldpattern(field: Union[str, FieldPattern]) -> FieldPattern:
+            if isinstance(field, str):
+                return FieldPattern(
+                    name=field,
+                    alias=None,
+                    approximate_match=approximate_match,
+                    min_ratio=min_ratio
+                )
+            if isinstance(field, FieldPattern):
+                # FieldPattern default values are overridden by parameters passed to FuzzyTable
+                params = {
+                    'approximate_match': approximate_match,
+                    'min_ratio': min_ratio,
+                }
+                for param in params.keys():
+                    field_param = getattr(field, param)
+                    if field_param is not None:
+                        params[param] = field_param
+                return FieldPattern(
+                    name=field.name,
+                    alias=field.alias,
+                    approximate_match=params['approximate_match'],
+                    min_ratio=params['min_ratio']
+                )
+
+        fieldpatterns = [generate_fieldpattern(field) for field in fieldpatterns]
+
+        ###############
+        # SheetParser #
+        ###############
+        sheet_reader = SheetPattern(path, sheetname).sheet_reader
+        sheet_parser = SheetParser(sheet_reader, fieldpatterns, header_row, header_row_seek)
+
+        ##############
+        # Data Model #
+        ##############
         self.name = name
         self.fields = sheet_parser.fields
         self.sheet = sheet_parser.sheet_summary
         self.records = sheet_parser.records
-
         self._fields_dict = {
             field.name: field.data
             for field in self.fields

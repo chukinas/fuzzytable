@@ -80,33 +80,37 @@ def dr_who_records(dr_who_fields):
 
 
 # --- names_generator -------------------------------------------------------------------
-person_count = 30
-name_fields = {
-    'first_name': [
-        names.get_first_name()
-        for i in range(person_count)
-    ],
-    'last_name': [
-        names.get_last_name()
-        for i in range(person_count)
-    ]
-}
+
+class NamesFixture:
+
+    def __init__(self, record_count=5):
+        self.fields = self.get_fields(record_count)
+        self.records = fields_to_records(self.fields)
+        self.path = self.get_path(self.records)
+
+    @staticmethod
+    def get_fields(record_count):
+        return {
+            'first_name': [names.get_first_name() for _ in range(record_count)],
+            'last_name': [names.get_last_name() for _ in range(record_count)]
+        }
+
+    @staticmethod
+    def get_path(records):
+        temp_dir = test_files_path / 'temp'
+        temp_dir.mkdir(exist_ok=True)
+        names_path = temp_dir / 'names.csv'
+        names_path.touch()
+        with open(str(names_path), "w", newline='') as csvfile:
+            csvwriter = csv.DictWriter(csvfile, fieldnames='first_name last_name'.split())
+            csvwriter.writeheader()
+            csvwriter.writerows(records)
+        return names_path
 
 
-@pytest.fixture(scope='session')
-def names_csv_path_and_fields():
-    names_records = fields_to_records(name_fields)
-    temp_dir = test_files_path / 'temp'
-    temp_dir.mkdir(exist_ok=True)
-    names_path = temp_dir / 'names.csv'
-    names_path.touch()
-    with open(str(names_path), "w", newline='') as csvfile:
-        csvwriter = csv.DictWriter(csvfile, fieldnames='first_name last_name'.split())
-        csvwriter.writeheader()
-        csvwriter.writerows(names_records)
-    # with open(names_path):
-    return names_path, name_fields
-    # names_path.unlink()
+@pytest.fixture(scope='function')
+def names_fixture():
+    return NamesFixture()
 
 
 # --- fuzzy tables ------------------------------------------------------------

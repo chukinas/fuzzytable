@@ -9,4 +9,8 @@ Change Log
 
 0.9-alpha (2019 Nov 14)
 -----------------------------------
-- added approximate matching
+- add approximate matching
+
+0.10-alpha (2019 Nov 15)
+-----------------------------------
+- add FieldPattern

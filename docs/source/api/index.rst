@@ -6,7 +6,6 @@ API Reference
    :maxdepth: 3
 
    fuzzytable
-   fields
-   records
-   sheet
+   fieldpattern
+   datamodel
    exceptions

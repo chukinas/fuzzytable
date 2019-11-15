@@ -4,10 +4,7 @@ import pytest
 from tests import conftest
 
 
-
 # --- errors during instantiation ---------------------------------------------
-
-
 # @pytest.mark.parametrize('io', [
 #     (None, None),
 #     (-1, ValueError),
@@ -31,7 +28,6 @@ from tests import conftest
 #         actual_error = TypeError
 #     assert actual_error == expected_error
 
-
 # --- path and sheetname errors -----------------------------------------------
 @pytest.mark.parametrize('path', [
     conftest.get_test_path('docx'),  # file of wrong type
@@ -39,7 +35,7 @@ from tests import conftest
     conftest.get_test_path().parent,  # dir (no file)
     0,
 ])
-###  1  ###
+# 1 #####
 def test_invalidpaths(path):
 
     # GIVEN a file path with an invalid (i.e. not excel) extension...
@@ -56,7 +52,7 @@ def test_invalidpaths(path):
         assert False
 
 
-###  2  ###
+# 2  #####
 def test_excel_missing_worksheet(test_path):
 
     # GIVEN an Excel worksheet that doesn't contain the desired worksheet name...
@@ -85,7 +81,7 @@ def test_excel_missing_worksheet(test_path):
     FuzzyTable,
     1
 ])
-###  3  ###
+#  3  #####
 def test_seek_but_no_fields(test_path, header_row_seek, field_names):
 
     # GIVEN a table whose headers are NOT in row 1...
@@ -106,7 +102,7 @@ def test_seek_but_no_fields(test_path, header_row_seek, field_names):
         assert False
 
 
-###  4  ###
+# 4  #####
 def test_error_from_invalid_headerseek(test_path):
 
     # GIVEN a valid path...
@@ -129,7 +125,7 @@ def test_error_from_invalid_headerseek(test_path):
         assert False
 
 
-###  5  ###
+# 5  #####
 @pytest.mark.parametrize("minratio", [
     'this produces a TypeError',
     -234,
@@ -139,13 +135,13 @@ def test_error_from_invalid_headerseek(test_path):
     ('first_name', exceptions.InvalidRatioError),
     (None, None),
 ])
-def test_invalid_min_ratio(fieldnames, minratio, error, names_csv_path_and_fields):
+def test_invalid_min_ratio(fieldnames, minratio, error, names_fixture):
 
     # GIVEN invalid min_ratios
     min_ratio = minratio
 
     # WHEN fuzzytable is instantiated
-    path, expected_fields = names_csv_path_and_fields
+    path = names_fixture.path
     fields = fieldnames
     try:
         FuzzyTable(

@@ -2,6 +2,7 @@ from fuzzytable import FuzzyTable
 import pytest
 import collections
 from fuzzytable import exceptions
+from fuzzytable import FieldPattern
 
 
 @pytest.mark.parametrize('header_row', [
@@ -9,7 +10,7 @@ from fuzzytable import exceptions
     20,
     100
 ])
-###  1  ###
+# 1  #####
 def test_csv(test_path, dr_who_fields, header_row):
 
     # GIVEN a table whose headers are NOT in row 1...
@@ -30,7 +31,7 @@ def test_csv(test_path, dr_who_fields, header_row):
     assert actual_output == expected_output
 
 
-###  2  ###
+# 2  #####
 def test_seek_too_few_rows(test_path, dr_who_fields):
 
     # GIVEN table whose headers are NOT in row 1...
@@ -61,7 +62,7 @@ HeaderError = collections.namedtuple("HeaderError", "header_row, error_type")
     FuzzyTable,
     2.5,
 ])
-###  3  ###
+# 3  #####
 def test_header_row_errors(test_path, dr_who_fields, header_row):
     header_error: HeaderError
 
@@ -86,7 +87,7 @@ def test_header_row_errors(test_path, dr_who_fields, header_row):
 
 
 @pytest.mark.parametrize("field_names", ['hello'])
-###  3  ###
+# 4  #####
 def test_seek_single_field(test_path, field_names):
 
     # GIVEN a table whose headers are NOT in row 1...
@@ -101,3 +102,33 @@ def test_seek_single_field(test_path, field_names):
 
     # THEN nothing breaks
     assert True
+
+
+# 5  #####
+def test_user_generated_fieldpatterns(names_fixture):
+
+    # GIVEN a set of user-generated fieldpatterns...
+    fields = [
+        FieldPattern(
+            name='something totally different',
+            alias='first name',
+            approximate_match=True,
+        ),
+        FieldPattern(
+            name='last_name',
+            alias=['last name', 'LastName'],
+        )
+    ]
+
+    # WHEN they are passed to FuzzyTable...
+    names = FuzzyTable(
+        path=names_fixture.path,
+        fields=fields,
+        header_row_seek=True,
+        name='names',
+    )
+
+    # THEN the same two fields are found.
+    actual_field_count = len(names)
+    expected_field_count = len(names_fixture.fields)
+    assert actual_field_count == expected_field_count
