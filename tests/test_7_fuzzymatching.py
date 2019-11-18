@@ -7,10 +7,10 @@ import pytest
     (0.3, 2),
 ])
 # 1  #####
-def test_approx_names(names_fixture, minratio, fieldcount):
+def test_approx_names(firstlastnames, minratio, fieldcount):
 
     # GIVEN a table with headers 'first_name' and 'last_name'...
-    path = names_fixture.path
+    path = firstlastnames.path
     min_ratio, expected_field_count = (minratio, fieldcount)
 
     # WHEN the user desires the following slightly different subfields...

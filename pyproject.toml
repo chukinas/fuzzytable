@@ -7,7 +7,7 @@ module = "fuzzytable"
 dist-name = "fuzzytable"
 author = "Jonathan Chukinas"
 author-email = "chukinas@gmail.com"
-home-page = "https://github.com/jonathanchukinas/excelerator"
+home-page = "https://github.com/jonathanchukinas/fuzzytable"
 description-file = "README.md"
 classifiers = [
     'Development Status :: 2 - Pre-Alpha',
@@ -23,11 +23,11 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
 ]
 keywords = "xlrd openpyxl Excel xlsx xls excel csv fuzzy"
-requires = ["openpyxl"]
-requires-python = ">=3.6.3"  # ">3.7"
+requires = ["openpyxl==3.0.0"]
+requires-python = ">=3.6.3"
 
 [tool.flit.metadata.urls]
-Documentation = "https://fuzzytable.readthedocs.io/en/latest/api_ref/index.html"
+Documentation = "https://fuzzytable.readthedocs.io/"
 
 [tool.flit.metadata.requires-extra]
 test = [

@@ -1,20 +1,19 @@
+.. image:: https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/v012norm/docs/source/images/logo.png
+   :alt: fuzzytable logo
+
+
 ================================================
-Welcome to fuzzytable's documentation!
+The Documentation
 ================================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    readme
    API Reference <api/index>
    Tutorials <tutorials/index>
    change_log
-
-
-
-.. include:: ../../tests/test_doctest.rst
-
 
 ==================
 Indices and tables
@@ -23,11 +22,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-----
-
-============
-Readme
-============
-
-.. mdinclude:: ../../README.md

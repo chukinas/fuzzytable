@@ -17,7 +17,7 @@ from fuzzytable import datamodel
 from fuzzytable import patterns
 from fuzzytable.main import sheetreader
 from fuzzytable.parsers.fieldparser import FieldParser
-from fuzzytable.datamodel import MultiField
+from fuzzytable.datamodel import MultiField, Field, SingleField
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -70,12 +70,6 @@ class SheetParser:
         else:
             fields_matched = all_ws_fields
 
-        # Assign data
-        data_row_start = actual_header_row + 1
-        for field in fields_matched:
-            data = sheet_reader.get_col(data_row_start, field.col_num)
-            field.data = data
-
         fields_dict = defaultdict(list)
         for field in fields_matched:
             fieldname = field.name
@@ -100,6 +94,8 @@ class SheetParser:
         ]
 
         fields = single_fields + multi_fields
+        for field in fields:
+            assign_data_to_field(field, sheet_reader, actual_header_row)
         self.fields = sorted(fields, key=lambda f: f.col_num)
 
         ############################
@@ -136,6 +132,7 @@ def header_row_and_ratio(
         fieldpatterns: List[patterns.FieldPattern],
         sheet_reader: sheetreader.SheetReader,
 ) -> (int, float):
+    """Given the FuzzyTable arguments, return the actual header row (and match ratio)."""
 
     # --- header row (no seek) --------------------------------------------
     if header_row_seek is False:
@@ -170,6 +167,27 @@ def header_row_and_ratio(
     actual_header_row_num = best_row_num
     header_row_ratio = best_ratio
     return actual_header_row_num, header_row_ratio
+
+
+def assign_data_to_field(field, sheet_reader, header_row_num):
+
+    field: MultiField
+    if isinstance(field, MultiField):
+        for subfield in field.subfields:
+            assign_data_to_field(subfield, sheet_reader, header_row_num)
+        return
+
+    field: SingleField
+    sheet_reader: sheetreader.SheetReader
+    # fieldparsers: List[FieldParser]
+    # fielparser = fieldparsers.ind
+    data_row_start = header_row_num + 1
+    data = sheet_reader.get_col(
+        start_row=data_row_start,
+        col_num=field.col_num,
+        cellpatterns=field.cellpattern,
+    )
+    field.data = data
 
 
 if __name__ == "__main__":

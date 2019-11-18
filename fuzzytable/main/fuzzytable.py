@@ -126,7 +126,7 @@ class FuzzyTable(collections.abc.Mapping):
                     min_ratio=min_ratio,
                     # No need to pass arguments that don't override the FuzzyTable defaults.
                 )
-            if isinstance(field, FieldPattern):
+            elif isinstance(field, FieldPattern):
                 # FieldPattern default values are overridden by parameters passed to FuzzyTable
                 params = {
                     'approximate_match': approximate_match,
@@ -143,7 +143,11 @@ class FuzzyTable(collections.abc.Mapping):
                     min_ratio=params['min_ratio'],
                     contains_match=field.contains_match,
                     multifield=field.multifield,
+                    cellpattern=field.cellpattern,
                 )
+            else:
+                # pass
+                raise exceptions.InvalidFieldError(fields)
 
         fieldpatterns = [generate_fieldpattern(field) for field in fieldpatterns]
 

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     # print(path1 == path1)
     # print('hello' == 'hello')
     # print(path1 == path2)
-    path = ct.get_test_path('csv')
+    path = ct._get_test_path('csv')
     print(type(path))
     suf = path.suffix
     print(suf, suf=='.csv')

@@ -1,0 +1,23 @@
+﻿index,values,notes
+0,0,
+1,5,
+2,42,
+3,42.4,
+4,42.5,
+5,42.6,
+6,2019-10-18 00:00:00,date
+7,  two spaces left,string with leading white space
+8,two spaces right  ,string with trailing white space
+9,1,leading apostrophe to force string
+10,"1, 2, 3",leading apostrophe to force string
+11,123 456 78hi,
+12,19twenty3,
+13,20 8,
+14,20 manager,
+15,"hello, good bye",
+16,helper 30,
+17,stringofletters,
+18,FALSE,excel boolean true
+19,TRUE,excel boolean false
+20,None,
+21,,blank space

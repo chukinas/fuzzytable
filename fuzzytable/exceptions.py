@@ -51,3 +51,9 @@ class InvalidRatioError(FuzzyTableError):
     def __init__(self, min_ratio):
         message = f"FuzzyTable min_ratio must be a number gt 0, lt 1. You passed {min_ratio}"
         super().__init__(message)
+
+
+class CellPatternError(FuzzyTableError, TypeError):
+    def __init__(self, value):
+        message = f"Cell patterns must a subclass or instance of fuzzytable.patterns.cellpattern.CellPattern or a callable. You passed {repr(value)} instead"
+        super().__init__(message)

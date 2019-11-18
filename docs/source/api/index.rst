@@ -8,4 +8,5 @@ API Reference
    fuzzytable
    fieldpattern
    datamodel
+   cellpatterns
    exceptions

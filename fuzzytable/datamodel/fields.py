@@ -70,6 +70,7 @@ class SingleField(Field):
         self.matched = False
         self.data = None
         self.ratio = None
+        self.cellpattern = None
 
         # populated during later step after all matching is done
 
@@ -108,6 +109,7 @@ class MultiField(Field):
         # self._header_row = header_row
         # self._row_count = row_count
         self.matched = True
+        self.cellpattern = None
 
     @property
     def header(self):

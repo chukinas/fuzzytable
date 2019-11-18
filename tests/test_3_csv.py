@@ -6,49 +6,24 @@ from fuzzytable import FieldPattern
 from fuzzytable import datamodel
 
 
-@pytest.mark.parametrize('header_row', [
-    None,
-    20,
-    100
+
+
+@pytest.mark.parametrize('kwargs,expected_fieldcount', [
+    pytest.param({'header_row': 4, 'name': 'firstlastname'}, 2, id='header row correctly set'),
+    pytest.param({'header_row_seek': 2}, 0, id='header row below search range'),
 ])
 # 1  #####
-def test_csv(test_path, dr_who_fields, header_row):
-
-    # GIVEN a table whose headers are NOT in row 1...
-    path = test_path('csv')
-
-    # WHEN user seeks header row...
-    fields = dr_who_fields.keys()
-    ft = FuzzyTable(
-        path=path,
-        header_row_seek=True,
-        fields=fields,
-        header_row=header_row
-    )
-
-    # THEN all desired field_names are extracted.
-    actual_output = dict(ft)
-    expected_output = dr_who_fields
-    assert actual_output == expected_output
-
-
-# 2  #####
-def test_seek_too_few_rows(test_path, dr_who_fields):
-
-    # GIVEN table whose headers are NOT in row 1...
-    path = test_path('csv')
-
+def test_seek_too_few_rows(firstlastnames_startrow4, kwargs, expected_fieldcount):
     # WHEN user seeks table in too few rows...
-    header_seek_rows = 2
     ft = FuzzyTable(
-        path=path,
-        fields=dr_who_fields.keys(),
-        header_row_seek=header_seek_rows,
-        name='Whoops!'
+        path=firstlastnames_startrow4.path,
+        fields=firstlastnames_startrow4.fields.keys(),
+        **kwargs,
     )
 
     # THEN no field_names are extracted.
-    assert len(ft) == 0
+    actual_fieldcount = len(ft)
+    assert actual_fieldcount == expected_fieldcount
 
     # ALSO
     print(ft)
@@ -64,11 +39,11 @@ HeaderError = collections.namedtuple("HeaderError", "header_row, error_type")
     2.5,
 ])
 # 3  #####
-def test_header_row_errors(test_path, dr_who_fields, header_row):
+def test_header_row_errors(get_test_path, dr_who_fields, header_row):
     header_error: HeaderError
 
     # GIVEN a table whose headers are NOT in row 1...
-    path = test_path('csv')
+    path = get_test_path('csv')
 
     # WHEN user gives an invalid header_row value,
     # regardless of the bool value of header_row_seek...
@@ -89,10 +64,10 @@ def test_header_row_errors(test_path, dr_who_fields, header_row):
 
 @pytest.mark.parametrize("field_names", ['hello'])
 # 4  #####
-def test_seek_single_field(test_path, field_names):
+def test_seek_single_field(get_test_path, field_names):
 
     # GIVEN a table whose headers are NOT in row 1...
-    path = test_path('csv')
+    path = get_test_path('csv')
 
     # WHEN user seeks header row and supplies single field_names...
     FuzzyTable(
@@ -106,7 +81,7 @@ def test_seek_single_field(test_path, field_names):
 
 
 # 5  #####
-def test_user_generated_fieldpatterns(names_fixture):
+def test_user_generated_fieldpatterns(firstlastnames):
 
     # GIVEN a set of user-generated fieldpatterns...
     fields = [
@@ -123,7 +98,7 @@ def test_user_generated_fieldpatterns(names_fixture):
 
     # WHEN they are passed to FuzzyTable...
     names = FuzzyTable(
-        path=names_fixture.path,
+        path=firstlastnames.path,
         fields=fields,
         header_row_seek=True,
         name='names',
@@ -131,7 +106,7 @@ def test_user_generated_fieldpatterns(names_fixture):
 
     # THEN the same two subfields are found.
     actual_field_count = len(names)
-    expected_field_count = len(names_fixture.fields)
+    expected_field_count = len(firstlastnames.fields)
     assert actual_field_count == expected_field_count
 
 
@@ -199,7 +174,7 @@ def test3_7_multifield(first_names):
     # THEN the 'id' singlefield's data can be accessed as a dict:
     id_field = ft.get_field('id')
     actual_firstrow_id = id_field[0]
-    expected_firstrow_id = '0'
+    expected_firstrow_id = 0
     assert actual_firstrow_id == expected_firstrow_id
 
     # THEN the len of both fields are equal

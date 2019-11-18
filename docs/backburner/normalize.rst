@@ -30,7 +30,7 @@ Birthday column returns integers.
         path='path/to/excel.xlsx',
         sheetname='names and birthdays',
         fields='Name Birthday'.split(),
-        normalize=[n.STRING(), n.INTEGER()],
+        normalize=[n.STRING(), n.Integer()],
     )
     fields = tr.get_fields()
 
@@ -40,7 +40,7 @@ Birthday column returns integers.
 
 .. note::
    Here's a common "gotcha": Make sure to instantiate the normalization classes.
-   That is, ``normalize=[n.STRING(), n.INTEGER()]`` instead of ``normalize=[n.STRING, n.INTEGER]``
+   That is, ``normalize=[n.STRING(), n.Integer()]`` instead of ``normalize=[n.STRING, n.Integer]``
 
 
 Create Custom Normalizing Classes
@@ -48,7 +48,7 @@ Create Custom Normalizing Classes
 
 But let's say we don't want the full string from ``Names``, but just the first name.
 
-We could subclass either ``DataPattern`` or one of its subclasses. Let's subclass ``STRING``.
+We could subclass either ``CellPattern`` or one of its subclasses. Let's subclass ``STRING``.
 
 .. code-block:: python
 
@@ -66,7 +66,7 @@ We could subclass either ``DataPattern`` or one of its subclasses. Let's subclas
             strings = norm_func(value).split()
             return strings[0]
 
-    tr.normalize = [n.FirstString(), n.INTEGER()]
+    tr.normalize = [n.FirstString(), n.Integer()]
     fields = tr.get_fields()
 
 ``fields['Name']`` returns ``['John', '123', 'Jane', 'River']``
@@ -76,9 +76,9 @@ Pretty easy, right?
 Classes
 ++++++++++
 
-.. autoclass:: excelerator.normalize.DataPattern
+.. autoclass:: excelerator.normalize.CellPattern
    :members:
 
 .. automodule:: excelerator.normalize
    :members:
-   :exclude-members: DataPattern
+   :exclude-members: CellPattern

@@ -2,20 +2,34 @@
 Change Log
 ---------------------------------------
 
-0.8-alpha (2019 Nov 12)
+0.12-alpha (2019 Nov 22)
 ---------------------------------------
-- rebrand EXCELerator to fuzzytable
-- rebuild data model
+- fix PyPI docs link
+- fix PyPI homepage link
+- add cellpatterns
 
-0.9-alpha (2019 Nov 14)
----------------------------------------
-- add approximate matching
+    - String
+    - Float
+    - Integer
+    - IntegerList
 
-0.10-alpha (2019 Nov 15)
----------------------------------------
-- add FieldPattern
+- add spreadsheet terminology to docs
+- add MIT license file
 
 0.11-alpha (2019 Nov 18)
 ---------------------------------------
 - add MultiField
 - add FuzzyTable.get_field()
+
+0.10-alpha (2019 Nov 15)
+---------------------------------------
+- add FieldPattern
+
+0.9-alpha (2019 Nov 14)
+---------------------------------------
+- add approximate matching
+
+0.8-alpha (2019 Nov 12)
+---------------------------------------
+- rebrand EXCELerator to fuzzytable
+- rebuild data model

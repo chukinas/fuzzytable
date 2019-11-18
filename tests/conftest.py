@@ -17,20 +17,26 @@ def pytest_configure(config):
     )
 
 
-
 # --- path to excel sheet -----------------------------------------------------
-test_files_path = Path(__file__).parent / 'test_files'
+_test_files_dir = Path(__file__).parent / 'test_files'
 
-def get_test_path(extension=None):
+
+@pytest.fixture(scope='session')
+def test_files_dir():
+    return _test_files_dir
+
+
+def _get_test_path(extension=None):
     if extension is None:
         extension = 'xlsx'
     filename = f"test.{extension}"
-    path = test_files_path / filename
+    path = _test_files_dir / filename
     return path
 
+
 @pytest.fixture(scope='session')
-def test_path():
-    return get_test_path
+def get_test_path():
+    return _get_test_path
 
 
 # --- standard set of expected results ----------------------------------------
@@ -38,7 +44,7 @@ def test_path():
 dr_who_fields_list = {
     'first_name': 'Rose Amy River'.split(),
     'last_name': 'Tyler Pond Song'.split(),
-    'last_appearance': '2013 2013 2015'.split(),
+    'last_appearance': [2013, 2013, 2015],
 }
 
 
@@ -79,59 +85,12 @@ def dr_who_records(dr_who_fields):
     return get_dr_who_records()
 
 
-# --- csv generator -----------------------------------------------------------
-def create_csv(path, fields):
-    path.touch()
-    headers = list(fields.keys())
-    records = fields_to_records(fields)
-    with open(str(path), "w", newline='') as csvfile:
-        csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
-        csvwriter.writeheader()
-        csvwriter.writerows(records)
-
-
-# --- test set: dr who --------------------------------------------------------
-
-# --- names_generator ---------------------------------------------------------
-
-class NamesFixture:
-
-    def __init__(self, record_count=5):
-        self.fields = self.get_fields(record_count)
-        self.records = fields_to_records(self.fields)
-        self.path = self.get_path(self.records)
-
-    @staticmethod
-    def get_fields(record_count):
-        return {
-            'first_name': [names.get_first_name() for _ in range(record_count)],
-            'last_name': [names.get_last_name() for _ in range(record_count)]
-        }
-
-    @staticmethod
-    def get_path(records):
-        temp_dir = test_files_path / 'temp'
-        temp_dir.mkdir(exist_ok=True)
-        names_path = temp_dir / 'names.csv'
-        names_path.touch()
-        with open(str(names_path), "w", newline='') as csvfile:
-            csvwriter = csv.DictWriter(csvfile, fieldnames='first_name last_name'.split())
-            csvwriter.writeheader()
-            csvwriter.writerows(records)
-        return names_path
-
-
-@pytest.fixture(scope='function')
-def names_fixture():
-    return NamesFixture()
-
-
 # --- first_names -------------------------------------------------------------
 
 class FirstNames:
 
-    def __init__(self, path):
-        self.path = path / 'first_names.csv'
+    def __init__(self, dir):
+        self.path = dir / 'first_names.csv'
         self.fields = self.get_fields()
         self.records = fields_to_records(self.fields)
         create_csv(self.path, self.fields)
@@ -149,6 +108,7 @@ class FirstNames:
     def fieldnames(self):
         return list(self.fields.keys())
 
+
 @pytest.fixture
 def first_names(tmp_path):
     return FirstNames(tmp_path)
@@ -161,7 +121,7 @@ def doctest_firstnames(doctest_namespace, first_names):
 
 # --- fuzzy tables ------------------------------------------------------------
 def ft_dr_who(field_names):
-    path = get_test_path('csv')
+    path = _get_test_path('csv')
     return FuzzyTable(
         path=path,
         header_row_seek=True,
@@ -190,8 +150,73 @@ def doctestnamespace2(doctest_namespace):
     doctest_namespace['stuff'] = 'turkey'
 
 
+##########################
+#  First and Last Names  #
+###############################################################################
 
+class NamesFixture:
+
+    def __init__(self, dir, record_count=5, start_row=1):
+        self.fields = self.get_fields(record_count)
+        self.records = fields_to_records(self.fields)
+        self.path = dir / 'names.csv'
+        create_csv(self.path, self.fields, start_row)
+
+    @staticmethod
+    def get_fields(record_count):
+        return {
+            'first_name': [names.get_first_name() for _ in range(record_count)],
+            'last_name': [names.get_last_name() for _ in range(record_count)]
+        }
+
+
+@pytest.fixture(scope='function')
+def firstlastnames(tmp_path):
+    return NamesFixture(dir=tmp_path,)
+
+
+@pytest.fixture(scope='function')
+def firstlastnames_startrow4(tmp_path):
+    return NamesFixture(dir=tmp_path, start_row=4,)
+
+###################
+#  csv generator  #
+###############################################################################
+
+def create_csv(path, fields, start_row=1):
+    path.touch()
+    headers = list(fields.keys())
+
+    # If start row is anything but 1, we'll need to prepend the fields' values with padding:
+    padding = [None]*(start_row - 1)
+    empty_row = [None]*len(headers)
+
+    records = fields_to_records(fields)
+    with open(str(path), "w", newline='') as csvfile:
+
+        # Write empty rows
+        csvwriter = csv.writer(csvfile)
+        for _ in range(start_row - 1):
+            csvwriter.writerow(empty_row)
+
+        # Write table
+        csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
+        csvwriter.writeheader()
+        csvwriter.writerows(records)
+
+
+#############
+#  scratch  #
+###############################################################################
+
+# def testcsv():
+#     path = Path('thisisatest.csv')
+#     fields = FirstNames.get_fields()
+#     create_csv(path, fields, 2)
 
 
 if __name__ == "__main__":
+    # path = 'thisisatest.csv'
+    # fields = FirstNames.get_fields()
+    # create_csv(path, fields, 2)
     pass

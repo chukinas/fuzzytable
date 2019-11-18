@@ -1,6 +1,6 @@
 .. _tutdatamodel:
 
-Tutorial 1: The Data Model
+The Data Model
 --------------------------
 
 Let's read the following csv file.

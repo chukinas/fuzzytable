@@ -2,13 +2,13 @@
 
 # --- Standard Library Imports ------------------------------------------------
 from difflib import SequenceMatcher
-from typing import List, Optional
+from typing import List, Optional, Union
 import collections
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable import exceptions
 from fuzzytable.patterns import FieldPattern
-from fuzzytable.datamodel import SingleField
+from fuzzytable.datamodel import SingleField, Field, MultiField
 from fuzzytable.main.utils import get_repr
 
 # --- Third Party Imports -----------------------------------------------------
@@ -112,11 +112,13 @@ class FieldParser:
 
     def assign_bestfit_field(self) -> None:
         # This is called when a FieldPattern has found a match
-        field = self.get_best_fieldratio().field
+
+        field: Union[SingleField, MultiField] = self.get_best_fieldratio().field
         field.ratio = self._bestfit_ratio
         field.name = self.name
+        field.cellpattern = self.fieldpattern.cellpattern
 
-        # Finally, mark as matched
+        # Finally, mark both as matched
         field.matched = True
         self.fieldpattern.matched = True
 

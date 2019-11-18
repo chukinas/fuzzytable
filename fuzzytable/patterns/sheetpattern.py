@@ -78,3 +78,7 @@ class SheetPattern:
 
     # def __repr__(self):
     #     return get_repr(self)  # pragma: no cover
+
+
+if __name__ == '__main__':
+    pass

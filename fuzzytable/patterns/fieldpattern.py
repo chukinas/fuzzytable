@@ -10,6 +10,7 @@ from typing import List, Union, Optional
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable import exceptions
 from fuzzytable.main.utils import get_repr
+from fuzzytable.patterns.cellpattern import normalize_cellpattern
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -41,6 +42,11 @@ class FieldPattern:
             the default behavior of the :obj:`~fuzzytable.FuzzyTable` ``approximate_match`` parameter.
         min_ratio (``float``, default ``None``):  Overrides
             the default behavior of the :obj:`~fuzzytable.FuzzyTable` ``min_ratio`` parameter.
+        contains_match (``bool``, default ``False``): Overrides the standard ratio-based approximate matching.
+            Instead, a match succeeds if any of this field's terms are contained in a cell string.
+        multifield (``bool``, default ``False``):
+        cellpattern (:obj:`~fuzzytable.patterns.cellpattern.CellPattern` or any callable):
+            This normalizes this field's data.
     """
 
     def __init__(
@@ -51,6 +57,7 @@ class FieldPattern:
             min_ratio: Optional[float] = None,
             contains_match: [bool] = False,
             multifield: [bool] = False,
+            cellpattern=None,
     ):
         self.name = name
         self.alias = alias
@@ -58,6 +65,7 @@ class FieldPattern:
         self.min_ratio = min_ratio
         self.contains_match = bool(contains_match)
         self.multifield = bool(multifield)
+        self.cellpattern = normalize_cellpattern(cellpattern)
 
         # These are not set yet.
         self.path = None

@@ -5,6 +5,8 @@ Interface between the csv/excel files and the rest of FuzzyTable
 # --- Standard Library Imports ------------------------------------------------
 import csv
 from contextlib import contextmanager
+from typing import List
+from ast import literal_eval
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable import exceptions
@@ -51,13 +53,20 @@ class SheetReader:
         row = self[row_num]
         return repr(row)
 
-    def get_col(self, start_row, col_num):
+    def get_col(self, col_num, start_row=1, cellpatterns=None):
         # Return column values as list
         col_index = col_num - 1
-        return (
-            row[col_index]
-            for row in self.iter_row(start_row=start_row)
-        )
+        values = [row[col_index] for row in self.iter_row(start_row=start_row)]
+        cellpatterns = force_list(cellpatterns)
+        cellpatterns.insert(0, _eval)
+        for cellpattern in cellpatterns:
+            for index, value in enumerate(values):
+                new_val = cellpattern(value)
+                values[index] = new_val
+            # NOTE: the above for loop replace the below comprehension for debugging purposes.
+            # I plan to change it back eventually
+            # values = [cellpattern(value) for value in values]
+        return values
 
     @property
     def row_count(self):
@@ -84,10 +93,19 @@ class SheetReader:
 
 
 class CsvReader(SheetReader):
+    # def get_col(self, start_row, col_num, cellpatterns=None):
+    #     cellpatterns = force_list(cellpatterns)
+    #     # cellpatterns.insert(0, _eval)
+    #     return super().get_col(start_row=start_row, col_num=col_num, cellpatterns=cellpatterns)
+    pass
 
-    def get_col(self, start_row, col_num):
-        orig_col = super().get_col(start_row=start_row, col_num=col_num)
-        return list(orig_col)
+def force_list(value) -> List:
+    if value is None:
+        return []
+    try:
+        return list(value)
+    except TypeError:
+        return [value]
 
 
 class ExcelReader(SheetReader):
@@ -103,17 +121,32 @@ class ExcelReader(SheetReader):
             # worksheet not found
             raise exceptions.SheetnameError(self.path, self.sheetname)
         yield ws.iter_rows(values_only=True)
+        # row = [cell.value for cell in row]
+        # yield row
 
-    def get_col(self, start_row, col_num):
-        orig_col = super().get_col(start_row=start_row, col_num=col_num)
-        return [str(val) for val in orig_col]
+    # def get_col(self, start_row, col_num):
+    #     orig_col = super().get_col(start_row=start_row, col_num=col_num)
+    #     return [str(val) for val in orig_col]
 
+
+def _eval(value):
+    if value == '':
+        return None
+    try:
+        return literal_eval(value)
+    except (SyntaxError, ValueError):
+        return _bool(value)
+
+
+def _bool(value):
+    if isinstance(value, bool):
+        return value
+    elif value in 'TRUE True true'.split():
+        return True
+    elif value in 'FALSE false False'.split():
+        return False
+    else:
+        return value
 
 if __name__ == '__main__':
-    # from tests.conftest import get_test_path
-    # path = get_test_path('xlsx')
-    # si_excel = ExcelReader(path, 'table_bottom_right')
-    # with si_excel.get_filereader() as iter_rows:
-    #     for row in iter_rows:
-    #         print(type(repr(row)))
     pass

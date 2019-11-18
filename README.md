@@ -1,4 +1,10 @@
-[![Documentation Status](https://readthedocs.org/projects/fuzzytable/badge/?version=latest)](https://fuzzytable.readthedocs.io/en/latest/?badge=latest)
+![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/v012norm/docs/source/images/logo.png "fuzzytable logo")
+![PyPI](https://img.shields.io/pypi/v/fuzzytable)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fuzzytable)
+![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/fuzzytable)
+![GitHub last commit](https://img.shields.io/github/last-commit/jonathanchukinas/fuzzytable)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/fuzzytable)
 
 # Overview
 fuzzytable is a set of tools for extracting tabular data out of messy spreadsheets.
