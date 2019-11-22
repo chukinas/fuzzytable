@@ -10,8 +10,8 @@ The Documentation
    :caption: Contents:
 
    readme
-   API Reference <api/index>
-   tutorials/index
+   learn_fuzzytable/index
+   api/index
    change_log
 
 ==================

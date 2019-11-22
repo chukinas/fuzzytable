@@ -5,4 +5,4 @@ from fuzzytable.main.fuzzytable import FuzzyTable
 from fuzzytable.patterns.fieldpattern import FieldPattern
 from fuzzytable.patterns import cellpattern_api as cellpatterns
 
-__version__ = "0.12.1-alpha"
+__version__ = "0.12.2-alpha"

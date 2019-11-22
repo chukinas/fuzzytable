@@ -49,7 +49,7 @@ class FuzzyTable(collections.abc.Mapping):
     - :obj:`FuzzyTable.sheet<fuzzytable.datamodel.Sheet>`: additional worksheet attributes (e.g. header row number, path).
 
 
-    See tutorials:
+    See learn_fuzzytable:
 
     - :ref:`Standard Usage<tutstandard>`
     - :ref:`Data Model<tutdatamodel>`
