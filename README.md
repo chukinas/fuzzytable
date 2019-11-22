@@ -1,4 +1,5 @@
-![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/v012norm/docs/source/images/logo.png "fuzzytable logo")
+![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/images/logo.png "fuzzytable logo")
+
 ![PyPI](https://img.shields.io/pypi/v/fuzzytable)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fuzzytable)
 ![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)
@@ -6,7 +7,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/jonathanchukinas/fuzzytable)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/fuzzytable)
 
-# Overview
+
 fuzzytable is a set of tools for extracting tabular data out of messy spreadsheets.
 
 This library was developed to meet the needs of projects relying on spreadsheet data that has been handled by many people. Headers are often missing or mispelled. The data is incorrectly formatted. The table is on the wrong worksheet or you don't know the correct spreadsheet name. Etc...

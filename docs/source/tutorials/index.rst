@@ -1,5 +1,5 @@
 -------------
-Tutorials
+Learning FuzzyTable
 -------------
 
 .. toctree::

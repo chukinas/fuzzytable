@@ -1,6 +1,5 @@
-.. image:: https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/v012norm/docs/source/images/logo.png
+.. image:: https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/images/logo.png
    :alt: fuzzytable logo
-
 
 ================================================
 The Documentation
@@ -12,7 +11,7 @@ The Documentation
 
    readme
    API Reference <api/index>
-   Tutorials <tutorials/index>
+   tutorials/index
    change_log
 
 ==================
