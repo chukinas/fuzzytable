@@ -14,4 +14,6 @@ install:
 
 script:
   - pytest --cov-report term-missing --cov=fuzzytest tests/
-  - codecov --token=f5104928-9f7b-4349-bc60-667d3a089011
+
+after_success:
+  - codecov  # --token=f5104928-9f7b-4349-bc60-667d3a089011
