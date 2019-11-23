@@ -2,13 +2,13 @@
 
 ## Golden Rules
 1. Be kind.
-2. Imperfect feedback is infinitely better than no feedback at all.
+2. Imperfect feedback is [infinitely better](https://en.wikipedia.org/wiki/Perfect_is_the_enemy_of_good) than no feedback at all.
 
 ## So you've found a bug or have a suggestion and... 
 
 ### You're short on time:
 No worries. This will take less than a minute. 
-- Go to the [github issues page](https://github.com/jonathanchukinas/fuzzytable/issues/new/choose).
+- Go to the github [issues page](https://github.com/jonathanchukinas/fuzzytable/issues/new/choose).
 - Select the **Get Started** button next to **Bug report** or **Feature request**
 - Fill in the title line.
 - Delete the template out the body and briefly describe your issue/feature.

@@ -12,6 +12,7 @@ The Documentation
    readme
    learn_fuzzytable/index
    api/index
+   contribute
    change_log
 
 ==================
