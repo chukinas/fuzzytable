@@ -11,6 +11,9 @@ from fuzzytable.main.fuzzytable import FuzzyTable, FieldPattern, exceptions
     pytest.param(p.str_field_instantiated, p.str_expected_values, '.csv', id='string (instantiated)'),
     pytest.param(p.intlist_fields, p.intlist_expected_values, '', id='integerlist'),
     pytest.param(p.float_fields, p.float_expected_values, '', id='float'),
+    pytest.param(p.wordlist_fields, p.wordlist_expected_values, '', id='wordlist'),
+    pytest.param(p.bool_fields, p.bool_expected_values, '', id='boolean'),
+    pytest.param(p.digit_fields, p.digit_expected_values, '', id='digit'),
 ])
 @pytest.mark.parametrize('filename,kwargs', [
     pytest.param('data_pattern.csv', {}, id='csv'),

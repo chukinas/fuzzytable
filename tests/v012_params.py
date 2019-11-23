@@ -157,6 +157,95 @@ float_fields = FieldPattern(
 )
 
 
+wordlist_expected_values = [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    ['two', 'spaces', 'left'],
+    ['two', 'spaces', 'right'],
+    [],
+    [],
+    ['hi'],
+    ['twenty'],
+    [],
+    ['manager'],
+    ['hello', 'good', 'bye'],
+    ['helper'],
+    ['stringofletters'],
+    ['False'],
+    ['True'],
+    [],
+    [],
+]
+wordlist_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.WordList,
+)
+
+
+bool_expected_values = [
+    False,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    False,
+    True,
+    False,
+    False,
+]
+bool_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.Boolean,
+)
+
+
+digit_expected_values = [
+    0,
+    5,
+    4,
+    4,
+    4,
+    4,
+    2,
+    None,
+    None,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    None,
+    3,
+    None,
+    None,
+    None,
+    None,
+    None,
+]
+digit_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.Digit
+)
+
 
 if __name__ == '__main__':
     val = 'FALSE'

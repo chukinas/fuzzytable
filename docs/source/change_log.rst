@@ -2,6 +2,14 @@
 Change Log
 ---------------------------------------
 
+
+0.13-alpha (2019 Nov 23)
+---------------------------------------
+- add cellpatterns
+    - WordList
+    - Boolean
+    - Digit
+
 0.12-alpha (2019 Nov 22)
 ---------------------------------------
 - fix PyPI docs link
