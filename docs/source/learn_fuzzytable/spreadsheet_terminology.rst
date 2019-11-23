@@ -2,7 +2,7 @@
 Spreadsheet Terminology
 --------------------------
 
-.. image:: ../images/spreadsheet_table.png
+.. image:: /_static/spreadsheet_table.png
    :alt: spreadsheet example
 
 

@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/images/logo.png
+.. image:: /_static/logo.png
    :alt: fuzzytable logo
 
 ================================================

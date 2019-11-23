@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'fuzzytable'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = '0.12.2-alpha'  # The full version, including alpha/beta/rc tags
+release = '0.12.3-alpha'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
@@ -45,16 +45,22 @@ exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'sphinx_rtd_theme'
-# html_theme = 'alabaster'
+# html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
+html_theme_options = {
+    'logo': 'logo.png',
+    # 'logo': 'https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/images/logo.png',
+    'github_user': 'jonathanchukinas',
+    'github_repo': 'fuzzytable',
+    'description': 'Read tables from messy spreadsheets'
+}
 # html_theme = 'bootstrap'
 # html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []  # ['_static']
-master_doc = 'index'
+html_static_path = ['_static']
 # https://github.com/readthedocs/readthedocs.org/issues/2569
 # b/c RTD throws an error and the about page says this is the solution to it.
 

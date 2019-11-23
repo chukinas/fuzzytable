@@ -1,8 +1,10 @@
-![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/images/logo.png "fuzzytable logo")
+![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/_static/logo.png "fuzzytable logo")
 
+![Travis (.com)](https://img.shields.io/travis/com/jonathanchukinas/fuzzytable)
+![Codecov](https://img.shields.io/codecov/c/github/jonathanchukinas/fuzzytable)
+![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)
 ![PyPI](https://img.shields.io/pypi/v/fuzzytable)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fuzzytable)
-![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/fuzzytable)
 ![GitHub last commit](https://img.shields.io/github/last-commit/jonathanchukinas/fuzzytable)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/fuzzytable)

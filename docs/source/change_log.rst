@@ -15,6 +15,7 @@ Change Log
 
 - add spreadsheet terminology to docs
 - add MIT license file
+- add travis & codecov integration
 
 0.11-alpha (2019 Nov 18)
 ---------------------------------------
