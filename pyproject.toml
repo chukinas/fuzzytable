@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
 ]
-keywords = "xlrd openpyxl Excel xlsx xls excel csv fuzzy"
+keywords = "xlrd openpyxl Excel xlsx xls excel csv fuzzy table spreadsheet"
 requires = ["openpyxl==3.0.0"]
 requires-python = ">=3.6.3"
 

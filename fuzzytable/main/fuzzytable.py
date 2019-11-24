@@ -101,6 +101,7 @@ class FuzzyTable(collections.abc.Mapping):
             name: Optional[str] = None,
             approximate_match=False,
             min_ratio=None,
+            missingfieldserror_active=False,
     ):
 
         #################
@@ -168,6 +169,15 @@ class FuzzyTable(collections.abc.Mapping):
             field.name: field
             for field in self.fields
         }
+
+        #####################
+        # MissingFieldError #
+        #####################
+        actualfields = set(self.keys())
+        expectedfields = set(fieldpattern.name for fieldpattern in fieldpatterns)
+        missingfieldnames = expectedfields - actualfields
+        if fieldpatterns and missingfieldserror_active and missingfieldnames:
+            raise exceptions.MissingFieldError(missingfieldnames=missingfieldnames, fuzzytablename=name)
 
     def __len__(self):
         return len(self._fields_dict)

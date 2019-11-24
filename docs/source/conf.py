@@ -2,7 +2,7 @@
 import os
 import sys
 # import sphinx_bootstrap_theme
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
 #
 # This file only contains a selection of the most common options. For a full
@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'fuzzytable'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = '0.13-alpha'  # The full version, including alpha/beta/rc tags
+release = '0.14-alpha'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
@@ -28,7 +28,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'm2r',
-    'sphinx_rtd_theme',
+    # 'sphinx_rtd_theme',
     'sphinx.ext.todo',
 ]
 master_doc = 'index'
