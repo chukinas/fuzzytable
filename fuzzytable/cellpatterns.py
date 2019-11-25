@@ -8,6 +8,7 @@ from datetime import datetime
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns.cellpattern import CellPattern
+from fuzzytable.main.utils import force_list
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -150,3 +151,45 @@ class Digit(CellPattern):
             return int(first_digit)
         except IndexError:
             return None
+
+
+class StringChoice(CellPattern):
+    """
+    Normalize cell values to a given list with a default value.
+
+    ``choices`` can be either a list or a dict.
+    If a dict, the keys are the choices that will be returned as data.
+    The values are used to match values. So are the keys, if ``dict_use_keys`` is True.
+    Case insensitive.
+    """
+
+    user_instantiated = True
+    get_str = String().apply_pattern
+
+    def __init__(self, choices, dict_use_keys=True, default=None):
+        super().__init__(default)
+        if isinstance(choices, dict):
+            self._choices = {}
+            for key in choices.keys():
+                val = force_list(choices[key])
+                if dict_use_keys:
+                    val.append(key)
+                self._choices[key] = val
+        else:
+            self._choices = {
+                val: [val]
+                for val in choices
+            }
+        # Here is how self._choices now stands:
+        # It is a dictionary.
+        # The keys are the values that be returned as cell values.
+        # The values (and the values alone!) are the matching criteria.
+
+    def apply_pattern(self, value):
+        value = StringChoice.get_str(value)
+        value.lower()
+        for enum_name, match_criteria in self._choices.items():
+            for match_criterion in match_criteria:
+                if match_criterion in value:
+                    return enum_name
+        return self.default_value

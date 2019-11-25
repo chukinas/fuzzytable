@@ -1,7 +1,6 @@
 import pytest
 from tests import v012_params as p
-from fuzzytable.main.fuzzytable import FuzzyTable, FieldPattern, exceptions
-
+from fuzzytable import FuzzyTable, FieldPattern, exceptions, cellpatterns
 
 @pytest.mark.parametrize('fields,expected_values,csv_or_excel', [
     pytest.param(p.def_fields, p.def_csv_expected_values, '.csv', id='default cellpatterns'),
@@ -14,6 +13,9 @@ from fuzzytable.main.fuzzytable import FuzzyTable, FieldPattern, exceptions
     pytest.param(p.wordlist_fields, p.wordlist_expected_values, '', id='wordlist'),
     pytest.param(p.bool_fields, p.bool_expected_values, '', id='boolean'),
     pytest.param(p.digit_fields, p.digit_expected_values, '', id='digit'),
+    pytest.param(p.stringchoice_fields, p.stringchoice_expected_values, '', id='choice'),
+    pytest.param(p.stringchoice_dict_fields, p.stringchoice_dict_expected_values, '', id='choice/dict'),
+    pytest.param(p.stringchoice_dict_usekeys_fields, p.stringchoice_dict_expected_values, '', id='choice/dict/keys'),
 ])
 @pytest.mark.parametrize('filename,kwargs', [
     pytest.param('data_pattern.csv', {}, id='csv'),
@@ -39,14 +41,13 @@ def test_cellpatterns(test_files_dir, fields, expected_values, filename, kwargs,
     assert actual_values == expected_values
 
 
+@pytest.mark.parametrize('fieldpattern_kwargs,exception', [
+    pytest.param({'name': 'doesnotmatter', 'cellpattern': 'This is not a cellpattern'},
+                 exceptions.CellPatternError, id='CellPatternError'),
+    pytest.param({'name': 'doesnotmatter', 'cellpattern': cellpatterns.StringChoice, },
+                 exceptions.UninstantiatededCellPatternError, id='UninstantiatededCellPatternError'),
+])
 # 012/2 #####
-def test_cellpatternerror():
-    with pytest.raises(exceptions.CellPatternError):
-        FieldPattern(
-            name='doesnotmatter',
-            cellpattern='This is not a cellpattern',
-        )
-
-
-# def test_instantiated_cellpattern():
-#
+def test_cellpatternerror(fieldpattern_kwargs, exception):
+    with pytest.raises(exception):
+        FieldPattern(**fieldpattern_kwargs)

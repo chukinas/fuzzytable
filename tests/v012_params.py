@@ -247,6 +247,76 @@ digit_fields = FieldPattern(
 )
 
 
+stringchoice_expected_values = [
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    'space',
+    'space',
+    None,
+    None,
+    None,
+    None,
+    None,
+    'manager',
+    None,
+    None,
+    'letter',
+    None,
+    None,
+    None,
+    None,
+]
+stringchoice_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoice(choices='space manager letter'.split(), default=None)
+)
+# TODO test non-strings
+
+
+stringchoice_dict_expected_values = [
+    None,
+    None,
+    'fortytwo',
+    'fortytwo',
+    'fortytwo',
+    'fortytwo',
+    None,
+    'string',
+    'string',
+    None,
+    None,
+    None,
+    None,
+    None,
+    'string',
+    None,
+    None,
+    'string',
+    None,
+    None,
+    None,
+    None,
+]
+choices = {
+    'fortytwo': '42',
+    'string': 'space manager string'.split(),
+    'letter': 'letter',
+}
+stringchoice_dict_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoice(choices=choices, dict_use_keys=False, default=None)
+)
+stringchoice_dict_usekeys_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoice(choices=choices, dict_use_keys=True, default=None)
+)
+
+
 if __name__ == '__main__':
     val = 'FALSE'
     _bool = bool(val)

@@ -5,7 +5,7 @@ providing more advanded field search options.
 """
 
 # --- Standard Library Imports ------------------------------------------------
-from typing import List, Union, Optional
+from typing import List, Optional
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable import exceptions

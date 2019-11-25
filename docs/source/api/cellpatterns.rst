@@ -1,24 +1,11 @@
+.. _apicellpatterns:
+
 ===========================
 Cell Patterns
 ===========================
 
-.. autoclass:: fuzzytable.cellpatterns.Float
-   :members:
+See the :ref:`cell pattern tutorial<tutcellpatterns>` for examples.
 
-.. autoclass:: fuzzytable.cellpatterns.Integer
+.. automodule:: fuzzytable.cellpatterns
    :members:
-
-.. autoclass:: fuzzytable.cellpatterns.IntegerList
-   :members:
-
-.. autoclass:: fuzzytable.cellpatterns.String
-   :members:
-
-.. autoclass:: fuzzytable.cellpatterns.WordList
-   :members:
-
-.. autoclass:: fuzzytable.cellpatterns.Boolean
-   :members:
-
-.. autoclass:: fuzzytable.cellpatterns.Digit
-   :members:
+   :show-inheritance:

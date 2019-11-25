@@ -72,7 +72,7 @@ class InvalidFieldError(FuzzyTableError):
 
 
 class InvalidSeekError(FuzzyTableError, TypeError):
-    # TODO this behavior should be changed in v1. This should be true or false. move the numbers to the header_row param.
+    # TODO v1 api change: This should be true or false. move the numbers to the header_row param.
     """
     Raised if FuzzyTable was passed an invalid ``header_seek`` argument.
 
@@ -97,7 +97,7 @@ class InvalidRatioError(FuzzyTableError):
 
 
 class CellPatternError(FuzzyTableError, TypeError):
-    # TODO rename to InvalidCellPattern
+    # TODO v1 api change: rename to InvalidCellPattern
     """
     Raised if FieldPattern was passed an invalid ``cellpatterns`` argument.
 
@@ -124,3 +124,9 @@ class MissingFieldError(FuzzyTableError):
         else:
             message = f"Error: the {repr(fuzzytablename)} table is missing fields {repr(missingfieldnames)}"
         super().__init__(message)
+
+
+class UninstantiatededCellPatternError(FuzzyTableError):
+    # TODO need docstring
+    def __init__(self, cellpattern_class):
+        message = f"The {repr(cellpattern_class)} must be instantiated before being passed to a FieldPattern."

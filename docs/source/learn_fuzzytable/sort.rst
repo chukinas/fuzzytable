@@ -23,13 +23,18 @@ Typhoid     Mary        2-Aug-83
 Jane        Smith       23-Oct-46
 =========== =========== ============
 
+Let's extract this table using all the default settings.
+Notice how ``ft.fields`` returns the three fields in the same order they appear in the spreadsheet.
+
+
 >>> import fuzzytable
 >>> ft = fuzzytable.FuzzyTable('birthdays.csv')
 >>> [field.name for field in ft.fields]
 ['first_name', 'last_name', 'birthday']
 
 
-Now let's extract the table using the field parameter. Note how the fields are in the same order as passed to FuzzyTable.
+But now let's extract the table using the ``field`` parameter.
+Notice now how ``ft.fields`` returns the fields in the order as passed to FuzzyTable.
 
 >>> ft = fuzzytable.FuzzyTable(
 >>>     'birthdays.csv',
@@ -39,6 +44,8 @@ Now let's extract the table using the field parameter. Note how the fields are i
 ['last_name', 'first_name']
 >>>
 
+But what if you don't want them in that order?
+What if you'd prefer to have them sorted in the order they appear in the spreadsheet? Easy.
 Because ``ft.fields`` is a list, you can sort it in place. See https://docs.python.org/3/howto/sorting.html for more details.
 
 >>> from operator import attrgetter
@@ -46,7 +53,8 @@ Because ``ft.fields`` is a list, you can sort it in place. See https://docs.pyth
 >>> [field.name for field in ft.fields]
 ['first_name', 'last_name']
 
-Finally, let's see how this works with MultiFields.
+The subfields collected by a ``multifield=True FieldPattern`` are stored in spreadsheet order.
+The ``col_num`` of a ``multifield FieldPattern`` is equal to the smallest ``col_num`` of its subfields.
 
 >>> names = fuzzytable.FieldPattern(
 >>>     name='names',

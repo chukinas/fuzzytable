@@ -5,7 +5,6 @@ Interface between the csv/excel files and the rest of FuzzyTable
 # --- Standard Library Imports ------------------------------------------------
 import csv
 from contextlib import contextmanager
-from typing import List
 from ast import literal_eval
 
 # --- Intra-Package Imports ---------------------------------------------------
@@ -16,6 +15,7 @@ from openpyxl.worksheet.worksheet import Worksheet as openpyxlWorksheet
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 
+from fuzzytable.main.utils import force_list
 
 INFINITY = float("inf")
 NEG_INFINITY = float("-inf")
@@ -98,14 +98,6 @@ class CsvReader(SheetReader):
     #     # cellpatterns.insert(0, _eval)
     #     return super().get_col(start_row=start_row, col_num=col_num, cellpatterns=cellpatterns)
     pass
-
-def force_list(value) -> List:
-    if value is None:
-        return []
-    try:
-        return list(value)
-    except TypeError:
-        return [value]
 
 
 class ExcelReader(SheetReader):

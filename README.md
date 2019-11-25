@@ -1,20 +1,24 @@
 ![Logo](https://raw.githubusercontent.com/jonathanchukinas/fuzzytable/master/docs/source/_static/logo.png "fuzzytable logo")
 
-![Travis (.com)](https://img.shields.io/travis/com/jonathanchukinas/fuzzytable)
-![Codecov](https://img.shields.io/codecov/c/github/jonathanchukinas/fuzzytable)
-![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)
-![PyPI](https://img.shields.io/pypi/v/fuzzytable)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fuzzytable)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/fuzzytable)
-![GitHub last commit](https://img.shields.io/github/last-commit/jonathanchukinas/fuzzytable)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/fuzzytable)
-
+[![Travis (.com)](https://img.shields.io/travis/com/jonathanchukinas/fuzzytable)](https://travis-ci.com/jonathanchukinas/fuzzytable)
+[![Codecov](https://img.shields.io/codecov/c/github/jonathanchukinas/fuzzytable)](https://codecov.io/gh/jonathanchukinas/fuzzytable)
+[![Read the Docs](https://img.shields.io/readthedocs/fuzzytable)](https://fuzzytable.readthedocs.io/)
+[![PyPI](https://img.shields.io/pypi/v/fuzzytable)](https://pypi.org/project/fuzzytable/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fuzzytable)](https://github.com/jonathanchukinas/fuzzytable/blob/master/tox.ini)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/fuzzytable)](https://pypi.org/project/fuzzytable/#modal-close)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jonathanchukinas/fuzzytable)](https://github.com/jonathanchukinas/fuzzytable/commits/master)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/fuzzytable)](https://pypistats.org/packages/fuzzytable)
 
 fuzzytable is a set of tools for extracting tabular data out of messy spreadsheets.
 
-This library was developed to meet the needs of projects relying on spreadsheet data that has been handled by many people. Headers are often missing or mispelled. The data is incorrectly formatted. The table is on the wrong worksheet or you don't know the correct spreadsheet name. Etc...
+This library meets the needs of projects relying on spreadsheet data that has been handled by many people.
+Headers are often missing or misspelled. 
+The data is incorrectly formatted.
+The table is on the wrong worksheet or you don't know the correct spreadsheet name. Etc...
 
-fuzzytable allows you to quickly extract that data instead of arduously QC'ing the data ahead of time. After extraction, you can query the FuzzyTable attributes to e.g. determine which fields were found and how closely the desired header matches the actual header.
+fuzzytable allows you to quickly extract that data instead of arduously QC'ing the data ahead of time.
+After extraction, you can inspect the FuzzyTable attributes to e.g. determine
+ which fields were found and how closely the desired header matches the actual header.
 
 # Installation
 

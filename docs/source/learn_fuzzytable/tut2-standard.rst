@@ -1,7 +1,7 @@
 .. _tutstandard:
 
 --------------------------
-Standard Usage
+Simple Usage
 --------------------------
 
 - You know which fields you want.(list of strings)

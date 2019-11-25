@@ -35,15 +35,62 @@ I'd hate for you to do all the work and submit a pull request only to find out i
 
 You can also email fuzzytable.dev@gmail.com, but we'll ultimately end up creating a github issue in order to keep a paper trail. 
 
-#### Developer Notes
+#### Developer Steps
 
-1. Fork and clone the fuzzytable repo.
-2. Create feature branch ``$ git checkout -b featurename``
+1. Fork the fuzzytable repo.
+
+2. Clone and create feature branch 
+
+   ```shell
+   $ git clone https://github.com/yourusername/fuzzytable.git
+   $ git checkout -b featurename
+   ```
+   
+3. Set up development environment 
+
+   ```shell
+   python -m venv .venv
+   .venv/scripts/activate   
+   pip install flit
+   flit install --deps develop --symlink
+   ```
+   
+   If running Windows, replace the ``--symlink`` option with ``--pth-file``. See [flit docs](https://flit.readthedocs.io/en/latest/cmdline.html#flit-install) for explanation.
+   
+   ```shell
+   flit install --deps develop --pth-file
+   ```
+   
 3. Write code.
-4. Write tests in ``/tests``. Install ``$ pip install tox`` and run ``$ tox`` and ensure 100% coverage.
-4. Commit your changes ``git commit -am 'add some feature'``
-4. Push to your remote ``git push --set-upstream origin featurename``
-5. Create a new Pull Request
+
+4. Test
+   Write tests in ``/tests``. 
+   Use pytest to run tests quickly
+    
+   ```shell
+   pytest
+   ```
+   
+   Run tests and check coverage:
+   
+   ```shell
+   pytest --cov-report term-missing --cov=fuzzytable tests/
+   ```
+   
+   When all tests pass and code has 100% coverage, run tox to ensure the code works in all three python environments:
+   
+   ```shell
+   tox
+   ```
+   
+5. Commit and push to remote
+
+   ```shell
+   git commit -am 'featurename'
+   git push --set-upstream origin featurename
+   ```
+
+6. Create a Pull Request
 
 ## Thanks!
 

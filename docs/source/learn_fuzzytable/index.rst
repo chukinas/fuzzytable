@@ -8,4 +8,6 @@ Learning FuzzyTable
    tut1-datamodel
    spreadsheet_terminology
    tut2-standard
+   fieldpatterns
+   cellpatterns
    sort

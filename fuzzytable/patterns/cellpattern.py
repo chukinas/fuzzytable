@@ -18,6 +18,9 @@ from fuzzytable import exceptions
 class CellPattern(ABC):
     """Base class for all normalization classes."""
 
+    user_instantiated = False
+    # If True, the class will raise an exception if not instantiated by user.
+
     def __init__(self, default_value=None):
         self.default_value = default_value
 
@@ -34,6 +37,8 @@ def normalize_cellpattern(value):
     elif isinstance(value, CellPattern):
         return value.apply_pattern
     elif isclass(value) and issubclass(value, CellPattern):
+        if value.user_instantiated:
+            raise exceptions.UninstantiatededCellPatternError(value)
         return value().apply_pattern
     elif callable(value):
         return value

@@ -17,3 +17,8 @@ script:
 
 after_success:
   - codecov  # --token=f5104928-9f7b-4349-bc60-667d3a089011
+
+# safelist
+branches:
+  only:
+  - master
