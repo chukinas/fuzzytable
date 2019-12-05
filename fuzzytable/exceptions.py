@@ -127,6 +127,8 @@ class MissingFieldError(FuzzyTableError):
 
 
 class UninstantiatededCellPatternError(FuzzyTableError):
-    # TODO need docstring
+    """
+    Some cell patterns must be instantiated prior to passing to a FieldPattern.
+    """
     def __init__(self, cellpattern_class):
         message = f"The {repr(cellpattern_class)} must be instantiated before being passed to a FieldPattern."

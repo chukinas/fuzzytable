@@ -2,6 +2,14 @@
 Change Log
 ---------------------------------------
 
+0.16 (05 Dec 2019)
+---------------------------------------
+- new cell pattern: StringChoiceMulti
+- documentation:
+
+  - add Boolean example
+  - add StringChoiceMulti example
+
 0.15-alpha (04 Dec 2019)
 ---------------------------------------
 - new cell pattern: StringChoice

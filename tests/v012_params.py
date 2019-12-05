@@ -275,8 +275,6 @@ stringchoice_fields = FieldPattern(
     name='values',
     cellpattern=cp.StringChoice(choices='space manager letter'.split(), default=None)
 )
-# TODO test non-strings
-
 
 stringchoice_dict_expected_values = [
     None,
@@ -314,6 +312,39 @@ stringchoice_dict_fields = FieldPattern(
 stringchoice_dict_usekeys_fields = FieldPattern(
     name='values',
     cellpattern=cp.StringChoice(choices=choices, dict_use_keys=True, default=None)
+)
+
+
+stringchoicemulti_expected_values = [
+    [],
+    [],
+    ['42'],
+    ['42'],
+    ['42'],
+    ['42'],
+    ['20'],
+    ['space', 'left'],
+    ['space', 'right'],
+    [],
+    [],
+    [],
+    [],
+    ['20'],
+    ['20'],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+]
+stringchoicemulti_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoiceMulti(
+        choices='42 20 space left right'.split(),
+        case_sensitive=False,
+    )
 )
 
 

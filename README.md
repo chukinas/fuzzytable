@@ -18,7 +18,7 @@ The table is on the wrong worksheet or you don't know the correct spreadsheet na
 
 fuzzytable allows you to quickly extract that data instead of arduously QC'ing the data ahead of time.
 After extraction, you can inspect the FuzzyTable attributes to e.g. determine
- which fields were found and how closely the desired header matches the actual header.
+which fields were found and how closely the desired header matches the actual header.
 
 # Installation
 

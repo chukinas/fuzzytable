@@ -127,6 +127,38 @@ class WordList(CellPattern):
 class Boolean(CellPattern):
     """
     Normalize cell values to booleans.
+
+    .. code-block:: python
+
+        # warm_colors.py
+
+        from fuzzytable import FuzzyTable, FieldPattern, cellpatterns
+
+        iswarmcolor_field = FieldPattern(
+            name="is_warm_color",
+            cellpattern=cellpatterns.Boolean,
+        )
+
+        warmcolor_table = FuzzyTable(
+            path='warm_colors.csv',
+            fields=['color', boolean_field],
+            approximate_match=True,
+        )
+
+    .. csv-table:: warm_colors.csv
+       :file: _docstringfiles/warm_colors.csv
+       :widths: auto
+       :align: left
+
+    >>> python warm_colors.py
+    >>> for record in warmcolor_table.records
+    ...     print(record)
+    ...
+    {'color': 'brown', 'is_warm_color': True}
+    {'color': 'green', 'is_warm_color': False}
+    {'color': 'yellow', 'is_warm_color': True}
+    {'color': 'black', 'is_warm_color': False}
+
     """
     def apply_pattern(self, value) -> bool:
         return bool(value)
@@ -193,3 +225,65 @@ class StringChoice(CellPattern):
                 if match_criterion in value:
                     return enum_name
         return self.default_value
+
+
+class StringChoiceMulti(CellPattern):
+    """
+    Check cell for desired strings. Return list of found strings.
+
+    .. code-block:: python
+
+        # colors.py
+
+        from fuzzytable import FuzzyTable, FieldPattern, cellpatterns
+
+        warm_color_field = FieldPattern(
+            name="warm_colors",
+            cellpattern=cellpatterns.StringChoiceMulti(
+                choices='red pink brown yellow'.split()
+                case_sensitive=False,
+            ),
+        )
+
+        colors_table = FuzzyTable(
+            path='colors.csv',
+            fields=[warm_color_field, 'cool_colors'],
+            approximate_match=True,
+        )
+
+    .. csv-table:: colors.csv
+       :file: _docstringfiles/colors.csv
+       :widths: auto
+       :align: left
+
+    >>> python colors.py
+    >>> for record in colors_table.records
+    ...     print(record)
+    ...
+    {'warm_colors': ['red', 'brown', 'yellow'], 'cool_colors': None}
+    {'warm_colors': ['brown'], 'cool_colors': 'green'}
+    {'warm_colors': ['red', 'yellow'], 'cool_colors': 'blue'}
+    {'warm_colors': [], 'cool_colors': 'black'}
+
+    Args:
+        choices (sequence of strings)
+        case_sensitive (``bool``, default ``True``)
+    """
+
+    user_instantiated = True
+    get_str = String().apply_pattern
+
+    def __init__(self, choices: List[str], case_sensitive=True):
+        super().__init__(default_value=None)
+        self.case_sensitive = case_sensitive
+        self.choices_orig = choices
+        self.choices_compare = choices if case_sensitive else [choice.lower() for choice in choices]
+
+    def apply_pattern(self, value):
+        found_choices = []
+        value = StringChoice.get_str(value)
+        value = value if self.case_sensitive else value.lower()
+        for choice_orig, choice_compare in zip(self.choices_orig, self.choices_compare):
+            if choice_compare in value:
+                found_choices.append(choice_orig)
+        return found_choices
