@@ -72,7 +72,7 @@ class InvalidFieldError(FuzzyTableError):
 
 
 class InvalidSeekError(FuzzyTableError, TypeError):
-    # TODO v1 api change: This should be true or false. move the numbers to the header_row param.
+
     """
     Raised if FuzzyTable was passed an invalid ``header_seek`` argument.
 
@@ -97,7 +97,6 @@ class InvalidRatioError(FuzzyTableError):
 
 
 class CellPatternError(FuzzyTableError, TypeError):
-    # TODO v1 api change: rename to InvalidCellPattern
     """
     Raised if FieldPattern was passed an invalid ``cellpatterns`` argument.
 

@@ -2,6 +2,14 @@
 Change Log
 ---------------------------------------
 
+0.17 (10 Dec 2019)
+---------------------------------------
+- additions to cell pattern: StringChoice:
+
+  - add approximate_match
+  - add min_ratio
+  - add case_sensitive
+
 0.16 (05 Dec 2019)
 ---------------------------------------
 - new cell pattern: StringChoiceMulti

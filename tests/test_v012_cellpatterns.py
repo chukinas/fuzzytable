@@ -16,6 +16,7 @@ from fuzzytable import FuzzyTable, FieldPattern, exceptions, cellpatterns
     pytest.param(p.stringchoice_fields, p.stringchoice_expected_values, '', id='choice'),
     pytest.param(p.stringchoice_dict_fields, p.stringchoice_dict_expected_values, '', id='choice/dict'),
     pytest.param(p.stringchoice_dict_usekeys_fields, p.stringchoice_dict_expected_values, '', id='choice/dict/keys'),
+    pytest.param(p.stringchoice_approx_fields, p.stringchoice_approx_expected_values, '', id='choice/approx'),
     pytest.param(p.stringchoicemulti_fields, p.stringchoicemulti_expected_values, '', id='stringchoicemulti')
 ])
 @pytest.mark.parametrize('filename,kwargs', [

@@ -315,6 +315,42 @@ stringchoice_dict_usekeys_fields = FieldPattern(
 )
 
 
+stringchoice_approx_expected_values = [
+    None,
+    None,
+    '42_',
+    '42_',
+    '42_',
+    '42_',
+    None,
+    'two_spaces',
+    'two_spaces',
+    None,
+    '1_2_3',
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    'string_of_letters',
+    None,
+    None,
+    None,
+    None,
+]
+
+choices = [
+    'two_spaces',
+    '1_2_3',
+    'string_of_letters',
+    '42_'
+]
+stringchoice_approx_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoice(choices=choices, approximate_match=True, default=None, min_ratio=.4)
+)
+
 stringchoicemulti_expected_values = [
     [],
     [],

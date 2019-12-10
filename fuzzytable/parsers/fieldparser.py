@@ -1,15 +1,14 @@
 """FieldParser objects do the hard work of figuring out a FieldPattern's best-fit SingleField."""
 
 # --- Standard Library Imports ------------------------------------------------
-from difflib import SequenceMatcher
 from typing import List, Optional, Union
 import collections
 
 # --- Intra-Package Imports ---------------------------------------------------
-from fuzzytable import exceptions
 from fuzzytable.patterns import FieldPattern
-from fuzzytable.datamodel import SingleField, Field, MultiField
+from fuzzytable.datamodel import SingleField, MultiField
 from fuzzytable.main.utils import get_repr
+from fuzzytable.main import string_analysis as strings
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -63,7 +62,11 @@ class FieldParser:
 
     def _calc_ratio(self, field: SingleField) -> float:
         if self.fieldpattern.approximate_match:
-            return self._get_best_ratio(self.fieldpattern.terms, [field.header], min_ratio=self.fieldpattern.min_ratio)
+            return strings.get_best_ratio(
+                self.fieldpattern.terms,
+                [field.header],
+                min_ratio=self.fieldpattern.min_ratio
+            )
         else:
             for term in self.fieldpattern.terms:
                 if term in field.header:
@@ -86,29 +89,12 @@ class FieldParser:
     @staticmethod
     def _fieldpattern_ratio(fieldpattern: FieldPattern, headers_string: str) -> float:
         if fieldpattern.approximate_match:
-            return FieldParser._get_best_ratio(fieldpattern.terms, [headers_string])
+            return strings.get_best_ratio(fieldpattern.terms, [headers_string])
         else:
             for term in fieldpattern.terms:
                 if term in headers_string:
                     return 1.0
         return 0.0
-
-    @staticmethod
-    def _get_best_ratio(strings1: List[str], strings2: List[str], min_ratio=0.0) -> float:
-        best_ratio = 0.0
-        for string1 in strings1:
-            for string2 in strings2:
-                if string1 == string2:
-                    return 1.0
-                matcher = SequenceMatcher(None, string1, string2)
-                if matcher.quick_ratio() < min_ratio:
-                    continue
-                ratio = matcher.ratio()
-                if ratio < min_ratio:
-                    continue
-                else:
-                    best_ratio = max(best_ratio, ratio)
-        return best_ratio
 
     def assign_bestfit_field(self) -> None:
         # This is called when a FieldPattern has found a match
@@ -132,15 +118,7 @@ class FieldParser:
 
     @property
     def name(self):
-        return self.fieldpattern.name  #pragma: no cover
+        return self.fieldpattern.name  # pragma: no cover
 
     def __repr__(self):
         return get_repr(self)  # pragma: no cover
-
-    # @staticmethod
-    # def ensure_unique_field_names(fieldpatterns):
-    #     counter = collections.Counter(fieldpattern.name for fieldpattern in fieldpatterns)
-    #     for name in counter:
-    #         if counter[name] > 1:
-                # what message should this return?
-    #             raise exceptions.InvalidFieldError

@@ -9,6 +9,7 @@ from datetime import datetime
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns.cellpattern import CellPattern
 from fuzzytable.main.utils import force_list
+from fuzzytable.main import string_analysis as strings
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -187,19 +188,68 @@ class Digit(CellPattern):
 
 class StringChoice(CellPattern):
     """
-    Normalize cell values to a given list with a default value.
+    Return "choice" that best fits the cell value.
 
-    ``choices`` can be either a list or a dict.
-    If a dict, the keys are the choices that will be returned as data.
-    The values are used to match values. So are the keys, if ``dict_use_keys`` is True.
-    Case insensitive.
+    .. code-block:: python
+
+        # cities.py
+
+        from fuzzytable import FuzzyTable, FieldPattern, cellpatterns
+
+        state_field = FieldPattern(
+            name="states",
+            cellpattern=cellpatterns.StringChoice(
+                choices='pennsylvania new_york north_carolina'.split()
+                case_sensitive=False,
+                approximate_match=True,
+                min_ratio=0.5,
+            ),
+        )
+
+        cities_table = FuzzyTable(path='cities.csv', fields=['city', state_field],)
+
+    .. csv-table:: cities.csv
+       :file: _docstringfiles/cities.csv
+       :widths: auto
+       :align: left
+
+    >>> python cities.py
+    >>> for record in cities_table.records
+    ...     print(record)
+    ...
+    {'city': 'New York', 'state': 'new_york'}
+    {'city': 'Philadelphia', 'state': 'pennsylvania'}
+    {'city': 'Albany', 'state': 'new_york'}
+    {'city': 'Raleigh', 'state': 'north_carolina'}
+    {'city': 'Wilmington', 'state': None}
+
+    Args:
+        choices (sequence of strings or dict whose values are sequences of strings) If dict,
+            the key is what is returned.
+        case_sensitive (``bool``, default ``False``)
+        dict_use_keys (``bool``, default ``True``)
+        default (Any, default ``None``) This value is returned if the cell value does not match
+            any of the choices given.
+        approximate_match (``bool``, default ``False``) If
+        min_ratio (``float`` within [0.0, 1.0], default ``0.6``)
     """
 
     user_instantiated = True
     get_str = String().apply_pattern
 
-    def __init__(self, choices, dict_use_keys=True, default=None):
+    def __init__(
+        self,
+        choices,
+        dict_use_keys=True,
+        default=None,
+        approximate_match=False,
+        min_ratio=0.6,
+        case_sensitive=False,
+    ):
         super().__init__(default)
+        self.approximate_match = approximate_match
+        self.min_ratio = min_ratio
+        self.case_sensitive = case_sensitive
         if isinstance(choices, dict):
             self._choices = {}
             for key in choices.keys():
@@ -218,13 +268,22 @@ class StringChoice(CellPattern):
         # The values (and the values alone!) are the matching criteria.
 
     def apply_pattern(self, value):
+
+        # Normalize the value to str
         value = StringChoice.get_str(value)
-        value.lower()
-        for enum_name, match_criteria in self._choices.items():
-            for match_criterion in match_criteria:
-                if match_criterion in value:
-                    return enum_name
-        return self.default_value
+
+        if self.approximate_match:
+            return strings.bestfit_dictkey(
+                search_dict=self._choices,
+                target=value,
+                min_ratio=self.min_ratio,
+                case_sensitive=self.case_sensitive)
+        else:
+            return strings.exactmatch_dictkey(
+                search_dict=self._choices,
+                target=value,
+                case_sensitive=self.case_sensitive
+            )
 
 
 class StringChoiceMulti(CellPattern):
