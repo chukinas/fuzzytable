@@ -17,14 +17,16 @@ from fuzzytable import FuzzyTable, FieldPattern, exceptions, cellpatterns
     pytest.param(p.stringchoice_dict_fields, p.stringchoice_dict_expected_values, '', id='choice/dict'),
     pytest.param(p.stringchoice_dict_usekeys_fields, p.stringchoice_dict_expected_values, '', id='choice/dict/keys'),
     pytest.param(p.stringchoice_approx_fields, p.stringchoice_approx_expected_values, '', id='choice/approx'),
-    pytest.param(p.stringchoicemulti_fields, p.stringchoicemulti_expected_values, '', id='stringchoicemulti')
+    pytest.param(p.stringchoice_exact_fields, p.stringchoice_exact_expected_values, '', id='choice/exact'),
+    pytest.param(p.stringchoicemulti_fields, p.stringchoicemulti_expected_values, '', id='stringchoicemulti'),
+    pytest.param(p.customwordlist_fields, p.customwordlist_expected_values, '', id='customwordlist'),
 ])
 @pytest.mark.parametrize('filename,kwargs', [
-    pytest.param('data_pattern.csv', {}, id='csv'),
     pytest.param('test.xlsx', {'sheetname': 'data_pattern'}, id='excel'),
+    pytest.param('data_pattern.csv', {}, id='csv'),
 ])
 # 012/1 #####
-def test_cellpatterns(test_files_dir, fields, expected_values, filename, kwargs, csv_or_excel):
+def test_12_1_cellpatterns(test_files_dir, fields, expected_values, filename, kwargs, csv_or_excel):
 
     # evaluate csv- or excel-only tests:
     if csv_or_excel not in filename:
@@ -44,12 +46,32 @@ def test_cellpatterns(test_files_dir, fields, expected_values, filename, kwargs,
 
 
 @pytest.mark.parametrize('fieldpattern_kwargs,exception', [
-    pytest.param({'name': 'doesnotmatter', 'cellpattern': 'This is not a cellpattern'},
-                 exceptions.CellPatternError, id='CellPatternError'),
-    pytest.param({'name': 'doesnotmatter', 'cellpattern': cellpatterns.StringChoice, },
-                 exceptions.UninstantiatededCellPatternError, id='UninstantiatededCellPatternError'),
+    pytest.param({
+        'name': 'doesnotmatter',
+        'cellpattern': 'This is not a cellpattern'
+    },
+        exceptions.CellPatternError,
+        id='CellPatternError'
+    ),
+    pytest.param({
+        'name': 'doesnotmatter',
+        'cellpattern': cellpatterns.StringChoice
+    },
+        exceptions.UninstantiatededCellPatternError,
+        id='UninstantiatededCellPatternError'
+    ),
 ])
 # 012/2 #####
 def test_cellpatternerror(fieldpattern_kwargs, exception):
     with pytest.raises(exception):
         FieldPattern(**fieldpattern_kwargs)
+
+
+# 012/3 #####
+def test_modeerror():
+    with pytest.raises(exceptions.ModeError):
+        cellpatterns.StringChoice(
+            mode='thisisnotavalidoption',
+            contains_match=False,
+            choices='does not matter what I put here'.split()
+        )

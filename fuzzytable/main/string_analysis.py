@@ -3,19 +3,23 @@ These are string-matching functions for finding the best-fit header row.
 """
 
 # --- Standard Library Imports ------------------------------------------------
-from typing import List, Dict
+from typing import List, Dict, Optional
 from difflib import SequenceMatcher
 from collections import namedtuple
+from unittest.mock import sentinel  # https://www.revsys.com/tidbits/sentinel-values-python/
 
 # --- Intra-Package Imports ---------------------------------------------------
 
 
 # --- Third Party Imports -----------------------------------------------------
 # None
-
+from fuzzytable import exceptions
 
 BestMatch = namedtuple("BestMatch", "index1 index2 string1 string2 ratio")
-no_match = BestMatch(None, None, None, None, 0.0)
+NoMatch = sentinel.NoMatch
+NoMatch.ratio = 0.0
+DefaultValue = sentinel.DefaultValue
+BestKey = namedtuple('BestKey', 'name ratio')
 
 
 def get_best_match(strings1: List[str], strings2: List[str], min_ratio=0.0, case_sensitive=True) -> BestMatch:
@@ -27,8 +31,8 @@ def get_best_match(strings1: List[str], strings2: List[str], min_ratio=0.0, case
             strings2=[val.lower() for val in strings2],
             min_ratio=min_ratio,
         )
-        if best_match_lowercase is no_match:
-            return no_match
+        if best_match_lowercase is NoMatch:
+            return NoMatch
         else:
             return BestMatch(
                 index1=best_match_lowercase.index1,
@@ -40,7 +44,7 @@ def get_best_match(strings1: List[str], strings2: List[str], min_ratio=0.0, case
 
 
 def get_best_match_case_sensitive(strings1: List[str], strings2: List[str], min_ratio=0.0) -> BestMatch:
-    best_match = no_match
+    best_match = NoMatch
     for index1, string1 in enumerate(strings1):
         for index2, string2 in enumerate(strings2):
             if string1 == string2:
@@ -72,13 +76,13 @@ def get_best_ratio(strings1: List[str], strings2: List[str], min_ratio=0.0) -> f
     return get_best_match(strings1, strings2, min_ratio).ratio
 
 
-def bestfit_dictkey(search_dict: Dict, target: str, min_ratio=0.0, case_sensitive=True):
+def _get_approxmatch(search_dict: Dict, target: str, min_ratio=0.0, case_sensitive=True):
     """
     Return dictionary key whose value (a list of strings) best fits the target value.
 
     Only the dictionary values are matched to the target string.
     """
-    best_key = None
+    best_key = NoMatch
     best_ratio = 0.0
     for key, value in search_dict.items():
         ratio = get_best_match(
@@ -88,22 +92,81 @@ def bestfit_dictkey(search_dict: Dict, target: str, min_ratio=0.0, case_sensitiv
             case_sensitive=case_sensitive,
         ).ratio
         if ratio > best_ratio:
-            best_key = key
+            best_key = BestKey(key, ratio)
             best_ratio = ratio
     return best_key
 
 
-def exactmatch_dictkey(search_dict: Dict, target: str, case_sensitive=True):
-    """The exact-matching version of bestfit_dictkey"""
-    for key, match_criteria in search_dict.items():
-        if not case_sensitive:
-            match_criteria = (string.lower() for string in match_criteria)
-            target = target.lower()
-        for match_criterion in match_criteria:
-            if match_criterion in target:
-                return key
-    return None
+def _exact_match(search_term, target):
+    return search_term == target
 
+
+def _contains_match(search_term, target):
+    return search_term in target
+
+
+_match_funcs = {
+    'exact': _exact_match,
+    'contains': _contains_match,
+}
+
+
+def _get_exactmatch_or_containsmatch(search_dict: Dict, target: str, mode: str, case_sensitive=True):
+    """The exact-matching version of bestfit_dictkey"""
+    match_func = _match_funcs[mode]
+    if not case_sensitive:
+        target = target.lower()
+    for key, search_terms in search_dict.items():
+        if not case_sensitive:
+            search_terms = (string.lower() for string in search_terms)
+        for search_term in search_terms:
+            if match_func(search_term, target):
+                bestkey = BestKey(key, 1.0)
+                return bestkey
+    return NoMatch
+
+
+def get_bestkey(
+        search_dict: Dict,
+        target: str,
+        mode: str,
+        default_value,
+        case_sensitive=True,
+        min_ratio=0.0,
+) -> BestKey:
+    if mode in 'exact contains'.split():
+        bestkey = _get_exactmatch_or_containsmatch(
+            search_dict=search_dict,
+            target=target,
+            mode=mode,
+            case_sensitive=case_sensitive,
+        )
+    else:  # i.e. mode == 'approx'.
+        bestkey = _get_approxmatch(
+            search_dict=search_dict,
+            target=target,
+            min_ratio=min_ratio,
+            case_sensitive=case_sensitive,
+        )
+
+    if bestkey is NoMatch:
+        return BestKey(default_value, 0.0)
+    else:
+        return bestkey
+
+
+def mode_setter(mode, approx_match, contains_match):
+    # API Change: replace this with setter
+    if mode in "exact approx contains".split():
+        return mode
+    elif mode is not DefaultValue and mode is not None:
+        raise exceptions.ModeError(mode)
+    elif approx_match:
+        return 'approx'
+    elif contains_match:
+        return 'contains'
+    else:
+        return DefaultValue
 
 # try:
 #     from fuzzywuzzy import fuzz

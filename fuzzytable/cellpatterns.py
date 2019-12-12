@@ -5,11 +5,13 @@ import datetime
 import re
 from typing import Optional, List
 from datetime import datetime
+from functools import lru_cache
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns.cellpattern import CellPattern
 from fuzzytable.main.utils import force_list
 from fuzzytable.main import string_analysis as strings
+from fuzzytable import exceptions
 
 # --- Third Party Imports -----------------------------------------------------
 # None
@@ -190,6 +192,11 @@ class StringChoice(CellPattern):
     """
     Return "choice" that best fits the cell value.
 
+    This pattern operates in one of these three modes:
+    - ``exact``
+    - ``approx``
+    - ``contains``
+
     .. code-block:: python
 
         # cities.py
@@ -227,11 +234,17 @@ class StringChoice(CellPattern):
         choices (sequence of strings or dict whose values are sequences of strings) If dict,
             the key is what is returned.
         case_sensitive (``bool``, default ``False``)
-        dict_use_keys (``bool``, default ``True``)
+        dict_use_keys (``bool``, default ``True``) If ``True`` and if ``choices`` is a dictionary,
+            the keys of the dict will be used as search terms.
         default (Any, default ``None``) This value is returned if the cell value does not match
             any of the choices given.
-        approximate_match (``bool``, default ``False``) If
+        approximate_match (``bool``, default ``False``)
+            *Deprecated in v0.18. To be removed in v1.0. Use* ``mode`` *instead.*
+            True overrides ``contains_match``.
         min_ratio (``float`` within [0.0, 1.0], default ``0.6``)
+        case_sensitive (``bool``, default ``False``)
+        contains_match (``bool``, default ``True``)
+            *Deprecated in v0.18. To be removed in v1.0. Use* ``mode`` *instead.*
     """
 
     user_instantiated = True
@@ -245,11 +258,15 @@ class StringChoice(CellPattern):
         approximate_match=False,
         min_ratio=0.6,
         case_sensitive=False,
+        contains_match=True,
+        mode=None,
     ):
         super().__init__(default)
-        self.approximate_match = approximate_match
         self.min_ratio = min_ratio
         self.case_sensitive = case_sensitive
+
+        self.mode = strings.mode_setter(mode, approximate_match, contains_match)
+
         if isinstance(choices, dict):
             self._choices = {}
             for key in choices.keys():
@@ -268,22 +285,16 @@ class StringChoice(CellPattern):
         # The values (and the values alone!) are the matching criteria.
 
     def apply_pattern(self, value):
-
-        # Normalize the value to str
-        value = StringChoice.get_str(value)
-
-        if self.approximate_match:
-            return strings.bestfit_dictkey(
-                search_dict=self._choices,
-                target=value,
-                min_ratio=self.min_ratio,
-                case_sensitive=self.case_sensitive)
-        else:
-            return strings.exactmatch_dictkey(
-                search_dict=self._choices,
-                target=value,
-                case_sensitive=self.case_sensitive
-            )
+        value_str = StringChoice.get_str(value)
+        bestkey = strings.get_bestkey(
+            search_dict=self._choices,
+            target=value_str,
+            min_ratio=self.min_ratio,
+            case_sensitive=self.case_sensitive,
+            mode=self.mode,
+            default_value=self.default_value,
+        )
+        return bestkey.name
 
 
 class StringChoiceMulti(CellPattern):

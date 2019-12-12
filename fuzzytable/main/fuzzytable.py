@@ -15,22 +15,19 @@ from pathlib import Path
 from typing import Union, Optional, Iterable
 
 # --- Intra-Package Imports ---------------------------------------------------
-from fuzzytable.patterns import SheetPattern
+from fuzzytable.patterns import \
+    SheetPattern,\
+    FieldPattern, \
+    minratio_setter,\
+    minratio_getter, \
+    mode_getter
+from fuzzytable.main.string_analysis import mode_setter, DefaultValue
 from fuzzytable.parsers import SheetParser
-from fuzzytable.patterns import FieldPattern
 from fuzzytable import exceptions
 from fuzzytable import datamodel
 
-
 # --- Third Party Imports -----------------------------------------------------
 # None
-
-
-class Initial(object):
-    pass
-
-
-INITIAL = Initial()
 
 
 FieldSummary = collections.namedtuple("FieldSummary", "header_name col_num field_name norm_func")
@@ -71,10 +68,13 @@ class FuzzyTable(collections.abc.Mapping):
             * ``None``: extract field_names for each non-``None`` cell in header row.
             * ``str`` or iterable thereof: extract matching field_names matching a cell in the header row.
         approximate_match (``bool``, default False): If True, subfields will match if they are at
-            least 60% similar to the field names supplied. This cutout value can be set with min_ratio
+            least 60% similar to the field names supplied. This cutout value can be set with min_ratio.
+            *Deprecated in v0.18. To be removed in v1.0. Use* ``mode`` *instead.*
         min_ratio (``float``, default None): The minimum similarity threshold for matching headers.
             Must be float 0.0 < x <= 1.0
         name (``str``, default None): Give this FuzzyTable instance a name.
+        mode (None or ``str``): Choose from ``'exact'``, ``'approx'``, or ``'contains'``.
+            ``mode`` overrides approximate_match and contains_match.
 
     Attributes:
         records: Return :obj:`~fuzzytable.datamodel.Records` object,
@@ -95,19 +95,25 @@ class FuzzyTable(collections.abc.Mapping):
             self,
             path: Union[str, Path],
             sheetname: Optional[str] = None,
-            fields: Optional[Union[Iterable[str], Iterable[FieldPattern], str]] = None,
+            fields: Optional[Union[Iterable[str], Iterable[FieldPattern], str, FieldPattern]] = None,
             header_row: Optional[int] = None,
             header_row_seek: Union[bool, int] = False,
             name: Optional[str] = None,
             approximate_match=False,
-            min_ratio=None,
+            min_ratio=DefaultValue,  # API Change: rename approx_minratio
             missingfieldserror_active=False,
+            mode=DefaultValue,  # API Change: change default to 'exact'
     ):
+
+        #################################################
+        # Values that can be overridden by FieldPattern #
+        #################################################
+        self.min_ratio = min_ratio
+        self._mode = mode_setter(mode, approximate_match, False)
 
         #################
         # FieldPatterns #
         #################
-
         if fields is None:
             fieldpatterns = []
         elif isinstance(fields, (str, FieldPattern)):
@@ -117,40 +123,7 @@ class FuzzyTable(collections.abc.Mapping):
                 fieldpatterns = list(fields)
             except TypeError:
                 raise exceptions.InvalidFieldError(fields)
-
-        def generate_fieldpattern(field: Union[str, FieldPattern]) -> FieldPattern:
-            if isinstance(field, str):
-                return FieldPattern(
-                    name=field,
-                    alias=None,
-                    approximate_match=approximate_match,
-                    min_ratio=min_ratio,
-                    # No need to pass arguments that don't override the FuzzyTable defaults.
-                )
-            elif isinstance(field, FieldPattern):
-                # FieldPattern default values are overridden by parameters passed to FuzzyTable
-                params = {
-                    'approximate_match': approximate_match,
-                    'min_ratio': min_ratio,
-                }
-                for param in params.keys():
-                    field_param = getattr(field, param)
-                    if field_param is not None:
-                        params[param] = field_param
-                return FieldPattern(
-                    name=field.name,
-                    alias=field.alias,
-                    approximate_match=params['approximate_match'],
-                    min_ratio=params['min_ratio'],
-                    contains_match=field.contains_match,
-                    multifield=field.multifield,
-                    cellpattern=field.cellpattern,
-                )
-            else:
-                # pass
-                raise exceptions.InvalidFieldError(fields)
-
-        fieldpatterns = [generate_fieldpattern(field) for field in fieldpatterns]
+        fieldpatterns = [normalize_fieldpattern(self, field) for field in fieldpatterns]
 
         ###############
         # SheetParser #
@@ -178,6 +151,18 @@ class FuzzyTable(collections.abc.Mapping):
         missingfieldnames = expectedfields - actualfields
         if fieldpatterns and missingfieldserror_active and missingfieldnames:
             raise exceptions.MissingFieldError(missingfieldnames=missingfieldnames, fuzzytablename=name)
+
+    @property
+    def min_ratio(self):
+        return minratio_getter(self._min_ratio)
+
+    @property
+    def mode(self):
+        return mode_getter(self._mode)
+
+    @min_ratio.setter
+    def min_ratio(self, value):
+        self._min_ratio = minratio_setter(value)
 
     def __len__(self):
         return len(self._fields_dict)
@@ -215,3 +200,14 @@ class FuzzyTable(collections.abc.Mapping):
 
     def get_field(self, fieldname: str) -> Optional[datamodel.Field]:
         return self._fields_dict.get(fieldname)
+
+
+def normalize_fieldpattern(fuzzytable: FuzzyTable, field: Union[str, FieldPattern]) -> FieldPattern:
+    if isinstance(field, str):
+        fieldpattern = FieldPattern(name=field)
+        return normalize_fieldpattern(fuzzytable, fieldpattern)
+    elif isinstance(field, FieldPattern):
+        field.fuzzytable = fuzzytable
+        return field
+    else:
+        raise exceptions.InvalidFieldError(field)

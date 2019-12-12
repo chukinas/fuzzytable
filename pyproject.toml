@@ -37,8 +37,11 @@ test = [
     "tox",  # for test automation
     "names",  # for generating random names during testing
 ]
-docs = [
+doc = [
     "sphinx",  # for documentation
     "m2r",  # sphinx extension for converting markdown to reStructuredText
 #    "sphinx-rtd-theme",  # sphinx readthedocs theme
+    "autodocsumm",  # enables the :autosummary: option for e.g. sphinx automodule
+    # https://stackoverflow.com/questions/28307051/automodule-to-generate-toc-in-sphinx-documents
+    # https://autodocsumm.readthedocs.io/en/latest/examples.html
 ]

@@ -58,7 +58,7 @@ class SheetParser:
         while True:
             available_fieldparsers = list(filter(lambda fp: fp.still_seeking, fieldparsers))
             try:
-                bestfit_fieldparser = max(available_fieldparsers, key=lambda fp: fp._bestfit_ratio)
+                bestfit_fieldparser = max(available_fieldparsers, key=lambda fp: fp.bestfit_ratio)
             except ValueError:
                 # No more available fieldparsers.
                 break

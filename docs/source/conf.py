@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'fuzzytable'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = '0.17'  # The full version, including alpha/beta/rc tags
+release = '0.18'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,7 +30,11 @@ extensions = [
     'm2r',
     # 'sphinx_rtd_theme',
     'sphinx.ext.todo',
+    'autodocsumm',  # pip install autodocsumm
 ]
+autodoc_default_options = {
+    'autosummary': True,
+}
 master_doc = 'index'
 # https://github.com/readthedocs/readthedocs.org/issues/2569
 # b/c RTD throws an error and the about page says this is the solution to it.

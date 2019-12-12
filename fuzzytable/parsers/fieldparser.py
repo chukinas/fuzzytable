@@ -3,6 +3,7 @@
 # --- Standard Library Imports ------------------------------------------------
 from typing import List, Optional, Union
 import collections
+from unittest.mock import sentinel
 
 # --- Intra-Package Imports ---------------------------------------------------
 from fuzzytable.patterns import FieldPattern
@@ -16,7 +17,9 @@ from fuzzytable.main import string_analysis as strings
 
 # The parser looks once at each field only once.
 # It stores the field and it's match ratio here for later reference.
-FieldRatio = collections.namedtuple("FieldRatio", "field ratio")
+PotentialField = collections.namedtuple("FieldRatio", "field ratio")
+NullField = sentinel.NullField
+NoMoreFields = PotentialField(field=None, ratio=0.0)
 
 
 class FieldParser:
@@ -24,25 +27,27 @@ class FieldParser:
     def __init__(self, fieldpattern, fields):
 
         self.fieldpattern = fieldpattern
-        self.fields = fields
+        self.matched = False
 
-        field_ratios = []
-        for field in fields:
+        field_rankings = []
+        for field in reversed(fields):
+            # Reversed b/c best matches are pulled off the end.
+            # All else being equal, an earlier column is a better match than later column.
             ratio = self._calc_ratio(field)
             if ratio == 0:
-                continue  # not a good match (ratio likely too low)
-            field_ratio = FieldRatio(field, ratio)
-            field_ratios.append(field_ratio)
-        self.field_ratios = sorted(field_ratios, key=lambda fr: fr.ratio)  # ascending
+                continue  # skip this field; not a good match (ratio likely too low)
+            field_ratio = PotentialField(field, ratio)
+            field_rankings.append(field_ratio)
+        self.field_ratios = sorted(field_rankings, key=lambda fr: fr.ratio)  # ascending
         # Note: all subfields in this list are potential good matches.
 
     @property
-    def _bestfit_ratio(self) -> float:
+    def bestfit_ratio(self) -> float:
         """Return match ratio with the best-fitting of the remaining subfields."""
         bestfit_fieldratio = self.get_best_fieldratio()
         return 0.0 if bestfit_fieldratio is None else bestfit_fieldratio.ratio
 
-    def get_best_fieldratio(self) -> Optional[FieldRatio]:
+    def get_best_fieldratio(self) -> Optional[PotentialField]:
         # Of all the remaining unmatched Fields, return the best-fit field/ratio tuple
 
         # Ratio is zero if there are no more subfields available
@@ -61,7 +66,7 @@ class FieldParser:
         return bestfit_fieldratio
 
     def _calc_ratio(self, field: SingleField) -> float:
-        if self.fieldpattern.approximate_match:
+        if self.fieldpattern.mode == 'approx':
             return strings.get_best_ratio(
                 self.fieldpattern.terms,
                 [field.header],
@@ -76,19 +81,20 @@ class FieldParser:
     @staticmethod
     def row_ratio(fieldpatterns: List[FieldPattern], headers_string: str) -> float:
         """Calculate the average ratio for a potential header row"""
-        if not fieldpatterns:
-            return 0.0
         individual_ratios = (
             FieldParser._fieldpattern_ratio(fieldpattern, headers_string)
             for fieldpattern in fieldpatterns
         )
         total = sum(individual_ratios)
-        average = total / len(fieldpatterns)
+        try:
+            average = total / len(fieldpatterns)
+        except ZeroDivisionError:
+            average = 0.0
         return average
 
     @staticmethod
     def _fieldpattern_ratio(fieldpattern: FieldPattern, headers_string: str) -> float:
-        if fieldpattern.approximate_match:
+        if fieldpattern.mode == 'approx':
             return strings.get_best_ratio(fieldpattern.terms, [headers_string])
         else:
             for term in fieldpattern.terms:
@@ -100,19 +106,19 @@ class FieldParser:
         # This is called when a FieldPattern has found a match
 
         field: Union[SingleField, MultiField] = self.get_best_fieldratio().field
-        field.ratio = self._bestfit_ratio
+        field.ratio = self.bestfit_ratio
         field.name = self.name
         field.cellpattern = self.fieldpattern.cellpattern
 
         # Finally, mark both as matched
         field.matched = True
-        self.fieldpattern.matched = True
+        self.matched = True
 
     @property
     def still_seeking(self):
         if self.fieldpattern.multifield and self.get_best_fieldratio():
             return True
-        if self.fieldpattern.matched or self.get_best_fieldratio() is None:
+        if self.matched or self.get_best_fieldratio() is None:
             return False
         return True
 

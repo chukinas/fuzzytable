@@ -187,6 +187,25 @@ wordlist_fields = FieldPattern(
 )
 
 
+# --- User-Defined cellpattern ------------------------------------------------
+def customwordlist(value):
+    wordlistpattern = cp.WordList()
+    wordlist = wordlistpattern.apply_pattern(value)
+    wordlist.append('')
+    return wordlist
+
+
+customwordlist_expected_values = [
+    list_ + ['']
+    for list_ in wordlist_expected_values
+]
+customwordlist_fields = FieldPattern(
+    name='values',
+    cellpattern=customwordlist,
+)
+
+
+# --- Boolean -----------------------------------------------------------------
 bool_expected_values = [
     False,
     True,
@@ -339,7 +358,6 @@ stringchoice_approx_expected_values = [
     None,
     None,
 ]
-
 choices = [
     'two_spaces',
     '1_2_3',
@@ -350,6 +368,44 @@ stringchoice_approx_fields = FieldPattern(
     name='values',
     cellpattern=cp.StringChoice(choices=choices, approximate_match=True, default=None, min_ratio=.4)
 )
+
+
+
+stringchoice_exact_expected_values = [
+    '0',
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    'two spaces left',
+    None,
+    None,
+    None,
+    None,
+    '19twenty3',
+    None,
+    None,
+    None,
+    None,
+    'stringofletters',
+    None,
+    None,
+    None,
+    None,
+]
+choices = [
+    '0',
+    'two spaces left',
+    '19twenty3',
+    'stringofletters'
+]
+stringchoice_exact_fields = FieldPattern(
+    name='values',
+    cellpattern=cp.StringChoice(choices=choices, mode='exact')
+)
+
 
 stringchoicemulti_expected_values = [
     [],

@@ -71,33 +71,19 @@ def test_error_from_invalid_headerseek(get_test_path):
         assert False
 
 
-@pytest.mark.parametrize("minratio", [
-    'this produces a TypeError',
-    -234,
-    1.1,
-])
-@pytest.mark.parametrize("fieldnames,error", [
-    ('first_name', exceptions.InvalidRatioError),
-    (None, None),
-])
+@pytest.mark.parametrize("minratio", ['a string', -234, 1.1,])
+@pytest.mark.parametrize("fieldnames", [None, 'first_name'])
 # 4  #####
-def test_invalid_min_ratio(fieldnames, minratio, error, firstlastnames):
+def test_invalid_min_ratio(fieldnames, minratio, firstlastnames):
 
-    # GIVEN invalid min_ratios
+    # GIVEN invalid min_ratio argument...
     min_ratio = minratio
 
-    # WHEN fuzzytable is instantiated
-    path = firstlastnames.path
-    fields = fieldnames
-    try:
+    # WHEN fuzzytable is instantiated...
+    # THEN an exception is raised.
+    with pytest.raises(exceptions.InvalidRatioError):
         FuzzyTable(
-            path=path,
-            fields=fields,
+            path=firstlastnames.path,
+            fields=fieldnames,
             min_ratio=min_ratio,
         )
-
-    # THEN an exception is raised if ...
-    except exceptions.InvalidRatioError as e:
-        assert type(e) == error
-    else:
-        assert error is None

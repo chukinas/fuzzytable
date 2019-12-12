@@ -21,7 +21,7 @@ def pytest_configure(config):
 _test_files_dir = Path(__file__).parent / 'test_files'
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def test_files_dir():
     return _test_files_dir
 

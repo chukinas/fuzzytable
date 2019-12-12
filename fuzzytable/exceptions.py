@@ -106,7 +106,7 @@ class CellPatternError(FuzzyTableError, TypeError):
         - a sequence of the above
     """
     def __init__(self, value):
-        message = f"Cell patterns must a subclass or instance of fuzzytable.patterns.cellpattern.CellPattern or a callable. You passed {repr(value)} instead"
+        message = f"Cell patterns must a subclass or instance of fuzzytable.patterns.cellpattern.CellPattern or a callable. You passed {repr(value)} instead."
         super().__init__(message)
 
 
@@ -121,7 +121,7 @@ class MissingFieldError(FuzzyTableError):
         if fuzzytablename is None:
             message = f"Error: the table is missing fields {repr(missingfieldnames)}"
         else:
-            message = f"Error: the {repr(fuzzytablename)} table is missing fields {repr(missingfieldnames)}"
+            message = f"Error: the {repr(fuzzytablename)} table is missing fields {repr(missingfieldnames)}."
         super().__init__(message)
 
 
@@ -131,3 +131,19 @@ class UninstantiatededCellPatternError(FuzzyTableError):
     """
     def __init__(self, cellpattern_class):
         message = f"The {repr(cellpattern_class)} must be instantiated before being passed to a FieldPattern."
+
+
+class ModeError(FuzzyTableError):
+    """
+   Raised if a CellPattern was passed an invalid ``mode`` argument.
+
+   Valid cellpattern ``mode`` arguments are:
+       - ``exact``
+       - ``approx``
+       - ``contains``
+   """
+
+    def __init__(self, mode):
+        valid_entries = 'exact approx contains'.split()
+        message = f"Cell pattern `mode` argument must be one of {valid_entries}. You passed {repr(mode)} instead."
+        super().__init__(message)

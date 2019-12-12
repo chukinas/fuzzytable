@@ -3,14 +3,13 @@ Simple repr for the major classes
 """
 
 # --- Standard Library Imports ------------------------------------------------
-# None
+from typing import List
 
 # --- Intra-Package Imports ---------------------------------------------------
 # None
 
 # --- Third Party Imports -----------------------------------------------------
 # None
-from typing import List
 
 
 def get_repr(self):

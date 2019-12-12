@@ -6,8 +6,6 @@ from fuzzytable import FieldPattern
 from fuzzytable import datamodel
 
 
-
-
 @pytest.mark.parametrize('kwargs,expected_fieldcount', [
     pytest.param({'header_row': 4, 'name': 'firstlastname'}, 2, id='header row correctly set'),
     pytest.param({'header_row_seek': 2}, 0, id='header row below search range'),
@@ -62,22 +60,40 @@ def test_header_row_errors(get_test_path, dr_who_fields, header_row):
         assert False
 
 
-@pytest.mark.parametrize("field_names", ['hello'])
+@pytest.mark.parametrize("kwargs", [
+    pytest.param({'fields': 'first_name'}, id='fields:str'),
+    pytest.param({'fields': ['first_name'], 'mode': 'exact'}, id='fields:strlist; mode:exact'),
+    pytest.param({'fields': FieldPattern(
+        name='first_name',
+        alias='last_name',
+        contains_match=True,
+    )},
+        id='FieldPattern; mode:contains'
+    ),
+    # pytest.param({'fields': FieldPattern(
+    #     name='first_name',
+    #     alias='first',
+    #     contains_match=True,
+    #     searchterms_excludename=True,
+    # )},
+    #     id='FieldPattern; searchterms_excludename'
+    # ),
+])
 # 4  #####
-def test_seek_single_field(get_test_path, field_names):
+def test_3_4_seek_single_field(get_test_path, kwargs):
 
     # GIVEN a table whose headers are NOT in row 1...
     path = get_test_path('csv')
 
     # WHEN user seeks header row and supplies single field_names...
-    FuzzyTable(
+    ft = FuzzyTable(
         path=path,
         header_row_seek=True,
-        fields=field_names,
+        **kwargs,
     )
 
     # THEN nothing breaks
-    assert True
+    assert ft.fields[0].name == 'first_name'
 
 
 # 5  #####
@@ -185,3 +201,28 @@ def test3_7_multifield(first_names):
     assert name_field.header == ('name 2', 'name 1', 'name 3')
 
     assert name_field.ratio >= min_ratio
+
+
+# 8  #####
+def test3_8_fuzzytableproperties(first_names):
+
+    # GIVEN a default fuzzytable call...
+    ft = FuzzyTable(path=first_names.path)
+
+    # THEN  min_ratio and mode properties return appropriate defaults.
+    assert ft.min_ratio == 0.6
+    assert ft.mode == 'exact'
+
+
+# 9  #####
+def test3_9_fuzzytable_invalidmode(first_names):
+
+    # WHEN FuzzyTable rcv invalid mode argument....
+    mode = 'this is an invalid mode!'
+
+    # THEN raise ModeError.
+    with pytest.raises(exceptions.ModeError):
+        FuzzyTable(
+            path=first_names.path,
+            mode=mode
+        )

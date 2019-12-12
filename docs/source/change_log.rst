@@ -2,6 +2,19 @@
 Change Log
 ---------------------------------------
 
+0.18 (15 Dec 2019)
+---------------------------------------
+- cellpatterns.StringChoice, FuzzyTable, FieldPattern:
+
+  - deprecate approximate_match, contains_match
+  - add ``mode`` parameter (and ``exceptions.ModeError`` for invalid values)
+
+- add searchterms_exclude to Fuzzy
+- improve API Documentation
+
+  - autodocsumm
+  - :autosummary:
+
 0.17 (10 Dec 2019)
 ---------------------------------------
 - additions to cell pattern: StringChoice:

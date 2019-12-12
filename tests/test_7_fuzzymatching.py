@@ -2,16 +2,15 @@ from fuzzytable import FuzzyTable
 import pytest
 
 
-@pytest.mark.parametrize("minratio,fieldcount", [
+@pytest.mark.parametrize("min_ratio,expected_fieldcount", [
     (None, 1),
     (0.3, 2),
 ])
 # 1  #####
-def test_approx_names(firstlastnames, minratio, fieldcount):
+def test_7_1_approx_names(firstlastnames, min_ratio, expected_fieldcount):
 
     # GIVEN a table with headers 'first_name' and 'last_name'...
     path = firstlastnames.path
-    min_ratio, expected_field_count = (minratio, fieldcount)
 
     # WHEN the user desires the following slightly different subfields...
     fields = ['first_name', 'given name', 'twas the night before christmas']
@@ -26,4 +25,4 @@ def test_approx_names(firstlastnames, minratio, fieldcount):
         min_ratio=min_ratio,
     )
     actual_field_count = len(ft.fields)
-    assert actual_field_count == expected_field_count
+    assert actual_field_count == expected_fieldcount
