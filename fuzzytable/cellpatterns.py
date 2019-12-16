@@ -245,6 +245,8 @@ class StringChoice(CellPattern):
         case_sensitive (``bool``, default ``False``)
         contains_match (``bool``, default ``True``)
             *Deprecated in v0.18. To be removed in v1.0. Use* ``mode`` *instead.*
+        mode (None or ``str``): Choose from ``'exact'``, ``'approx'``, or ``'contains'``.
+            ``mode`` overrides approximate_match and contains_match.
     """
 
     user_instantiated = True

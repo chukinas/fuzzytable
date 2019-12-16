@@ -21,6 +21,7 @@ from fuzzytable.patterns import \
     minratio_setter,\
     minratio_getter, \
     mode_getter
+from fuzzytable.patterns import fieldpattern as fp
 from fuzzytable.main.string_analysis import mode_setter, DefaultValue
 from fuzzytable.parsers import SheetParser
 from fuzzytable import exceptions
@@ -75,6 +76,8 @@ class FuzzyTable(collections.abc.Mapping):
         name (``str``, default None): Give this FuzzyTable instance a name.
         mode (None or ``str``): Choose from ``'exact'``, ``'approx'``, or ``'contains'``.
             ``mode`` overrides approximate_match and contains_match.
+        case_sensitive (None or ``bool``, default ``True``): Used when seeking header row and
+            matching Fields to FieldPatterns.
 
     Attributes:
         records: Return :obj:`~fuzzytable.datamodel.Records` object,
@@ -103,6 +106,7 @@ class FuzzyTable(collections.abc.Mapping):
             min_ratio=DefaultValue,  # API Change: rename approx_minratio
             missingfieldserror_active=False,
             mode=DefaultValue,  # API Change: change default to 'exact'
+            case_sensitive=DefaultValue,
     ):
 
         #################################################
@@ -110,6 +114,7 @@ class FuzzyTable(collections.abc.Mapping):
         #################################################
         self.min_ratio = min_ratio
         self._mode = mode_setter(mode, approximate_match, False)
+        self._case_sensitive = fp.casesensitive_setter(case_sensitive)
 
         #################
         # FieldPatterns #
@@ -151,6 +156,10 @@ class FuzzyTable(collections.abc.Mapping):
         missingfieldnames = expectedfields - actualfields
         if fieldpatterns and missingfieldserror_active and missingfieldnames:
             raise exceptions.MissingFieldError(missingfieldnames=missingfieldnames, fuzzytablename=name)
+
+    @property
+    def case_sensitive(self):
+        return fp.casesensitive_getter(self._case_sensitive)
 
     @property
     def min_ratio(self):

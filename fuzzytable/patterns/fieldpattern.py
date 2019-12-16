@@ -55,6 +55,8 @@ class FieldPattern:
         searchterms_excludename (``bool``, default ``False``): If True, the FieldPattern `name` is not used
             as a search term; only aliases are used. This means a FieldPattern with `searchterms_excludename` and no aliases
             will produce no matches!
+        case_sensitive (None or ``bool``, default ``True``): Used when seeking header row and
+            matching Fields to FieldPatterns.
     """
 
     def __init__(
@@ -77,6 +79,7 @@ class FieldPattern:
             # API Change: need to add 'exact' default back in.
             # The IS NO corresponding FuzzyTable value:
             searchterms_excludename=False,
+            case_sensitive=DefaultValue,
     ):
         self.name = name
         self.alias = alias
@@ -85,7 +88,13 @@ class FieldPattern:
         self.cellpattern = normalize_cellpattern(cellpattern)
         self.searchterms_excludename = searchterms_excludename
         self._mode = mode_setter(mode, approximate_match, contains_match)
+        self._case_sensitive = casesensitive_setter(case_sensitive)
         self.fuzzytable = None  #
+
+    @property
+    def case_sensitive(self):
+        attr_value = self._get_value_allow_fuzzytable_to_override('_case_sensitive')
+        return casesensitive_getter(attr_value)
 
     @property
     def mode(self):
@@ -133,6 +142,20 @@ class FieldPattern:
 
     def __repr__(self):
         return get_repr(self)  # pragma: no cover
+
+
+def casesensitive_getter(value):
+    if value is DefaultValue:
+        return True
+    else:
+        return value
+
+
+def casesensitive_setter(value):
+    if value is DefaultValue:
+        return value
+    else:
+        return bool(value)
 
 
 def minratio_getter(minratio):

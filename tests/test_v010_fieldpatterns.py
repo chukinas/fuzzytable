@@ -62,3 +62,25 @@ def test_10_3_searchterms_excludename(searchterms_excludename, expected_matchedh
     actual_matchedheader = ft.fields[0].header
 
     assert actual_matchedheader == expected_matchedheader
+
+
+def test_10_4_casesensitive(firstlastnames):
+
+    # GIVEN a table with headers 'first_name' and 'last_name'...
+    path = firstlastnames.path
+
+    # WHEN doing exact, but case-insensitive header search...
+    expected_fieldnames = 'FIRST_NAME LAST_NAME'.split()
+    ft = FuzzyTable(
+        path=path,
+        fields=expected_fieldnames,
+        case_sensitive=False,
+    )
+
+    # THEN those fields are successfully found
+    actual_fieldnames = [
+        field.name
+        for field in ft.fields
+    ]
+
+    assert actual_fieldnames == expected_fieldnames

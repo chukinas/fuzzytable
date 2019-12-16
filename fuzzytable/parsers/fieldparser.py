@@ -66,17 +66,15 @@ class FieldParser:
         return bestfit_fieldratio
 
     def _calc_ratio(self, field: SingleField) -> float:
-        if self.fieldpattern.mode == 'approx':
-            return strings.get_best_ratio(
-                self.fieldpattern.terms,
-                [field.header],
-                min_ratio=self.fieldpattern.min_ratio
-            )
-        else:
-            for term in self.fieldpattern.terms:
-                if term in field.header:
-                    return 1.0
-            return 0.0
+        bestkey = strings.get_bestkey(
+            search_dict={self.name: self.fieldpattern.terms},
+            target=field.header,
+            mode=self.fieldpattern.mode,
+            default_value=None,
+            case_sensitive=self.fieldpattern.case_sensitive,
+            min_ratio=self.fieldpattern.min_ratio,
+        )
+        return bestkey.ratio
 
     @staticmethod
     def row_ratio(fieldpatterns: List[FieldPattern], headers_string: str) -> float:
@@ -94,10 +92,17 @@ class FieldParser:
 
     @staticmethod
     def _fieldpattern_ratio(fieldpattern: FieldPattern, headers_string: str) -> float:
+        search_terms = fieldpattern.terms
+        if not fieldpattern.case_sensitive:
+            search_terms = [
+                search_term.lower()
+                for search_term in search_terms
+            ]
+            headers_string = headers_string.lower()
         if fieldpattern.mode == 'approx':
-            return strings.get_best_ratio(fieldpattern.terms, [headers_string])
+            return strings.get_best_ratio(search_terms, [headers_string])
         else:
-            for term in fieldpattern.terms:
+            for term in search_terms:
                 if term in headers_string:
                     return 1.0
         return 0.0

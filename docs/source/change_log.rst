@@ -2,6 +2,13 @@
 Change Log
 ---------------------------------------
 
+0.19 (16 Dec 2019)
+---------------------------------------
+- Add ``case_sensitive`` parameter to:
+
+  - ``FuzzyTable``
+  - ``FieldPattern``
+
 0.18 (15 Dec 2019)
 ---------------------------------------
 - cellpatterns.StringChoice, FuzzyTable, FieldPattern:

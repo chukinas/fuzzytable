@@ -20,7 +20,7 @@ sys.path.insert(0, project_path)
 project = 'fuzzytable'
 copyright = '2019, Jonathan Chukinas'
 author = 'Jonathan Chukinas'
-release = '0.18'  # The full version, including alpha/beta/rc tags
+release = '0.19'  # The full version, including alpha/beta/rc tags
 
 
 # -- General configuration ---------------------------------------------------

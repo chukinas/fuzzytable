@@ -212,6 +212,7 @@ def test3_8_fuzzytableproperties(first_names):
     # THEN  min_ratio and mode properties return appropriate defaults.
     assert ft.min_ratio == 0.6
     assert ft.mode == 'exact'
+    assert ft.case_sensitive == True
 
 
 # 9  #####
